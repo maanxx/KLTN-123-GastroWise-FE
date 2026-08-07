@@ -1,0 +1,101 @@
+import type { Restaurant, Review } from '@/types';
+
+/**
+ * Mock data quán ăn — dữ liệu GIẢ, KHÔNG phải dữ liệu thật
+ * Dùng trong giai đoạn phát triển khi chưa có API
+ */
+export const MOCK_RESTAURANTS: Restaurant[] = [
+  {
+    id: 'rest-001',
+    name: 'Phở Bò Lý Quốc Sư',
+    description: 'Quán phở nổi tiếng với nước dùng đậm đà, thịt bò tươi. Phục vụ từ sáng sớm.',
+    address: '123 Đường Nguyễn Huệ, Quận 1, TP.HCM',
+    phone: '028-1234-5678',
+    images: ['/images/mock/pho-1.jpg', '/images/mock/pho-2.jpg'],
+    coverImage: '/images/mock/pho-cover.jpg',
+    rating: 4.7,
+    totalReviews: 234,
+    priceRange: { min: 50000, max: 80000, label: '50k - 80k' },
+    cuisineTypes: ['viet', 'street-food'],
+    openingHours: [
+      { dayOfWeek: 1, openTime: '06:00', closeTime: '14:00' },
+      { dayOfWeek: 2, openTime: '06:00', closeTime: '14:00' },
+      { dayOfWeek: 3, openTime: '06:00', closeTime: '14:00' },
+      { dayOfWeek: 4, openTime: '06:00', closeTime: '14:00' },
+      { dayOfWeek: 5, openTime: '06:00', closeTime: '14:00' },
+      { dayOfWeek: 6, openTime: '06:00', closeTime: '15:00' },
+      { dayOfWeek: 0, openTime: '06:00', closeTime: '15:00' },
+    ],
+    coordinate: { latitude: 10.7751, longitude: 106.7005 },
+    isOpen: true,
+  },
+  {
+    id: 'rest-002',
+    name: 'Bánh Mì Huỳnh Hoa',
+    description: 'Bánh mì nổi tiếng nhất Sài Gòn với nhân đầy đặn, giá cả phải chăng.',
+    address: '26 Lê Thị Riêng, Quận 1, TP.HCM',
+    phone: '028-2345-6789',
+    images: ['/images/mock/banh-mi-1.jpg'],
+    coverImage: '/images/mock/banh-mi-cover.jpg',
+    rating: 4.5,
+    totalReviews: 512,
+    priceRange: { min: 45000, max: 65000, label: '45k - 65k' },
+    cuisineTypes: ['viet', 'street-food'],
+    openingHours: [
+      { dayOfWeek: 1, openTime: '14:30', closeTime: '23:00' },
+      { dayOfWeek: 2, openTime: '14:30', closeTime: '23:00' },
+      { dayOfWeek: 3, openTime: '14:30', closeTime: '23:00' },
+      { dayOfWeek: 4, openTime: '14:30', closeTime: '23:00' },
+      { dayOfWeek: 5, openTime: '14:30', closeTime: '23:00' },
+      { dayOfWeek: 6, openTime: '14:30', closeTime: '23:30' },
+      { dayOfWeek: 0, openTime: '14:30', closeTime: '23:30' },
+    ],
+    coordinate: { latitude: 10.7712, longitude: 106.6923 },
+    isOpen: true,
+  },
+  {
+    id: 'rest-003',
+    name: 'Sushi Tei',
+    description: 'Chuỗi nhà hàng Nhật Bản chất lượng cao, không gian sang trọng.',
+    address: '65 Lê Lợi, Quận 1, TP.HCM',
+    phone: '028-3456-7890',
+    images: ['/images/mock/sushi-1.jpg'],
+    coverImage: '/images/mock/sushi-cover.jpg',
+    rating: 4.3,
+    totalReviews: 189,
+    priceRange: { min: 200000, max: 500000, label: '200k - 500k' },
+    cuisineTypes: ['japan'],
+    openingHours: [
+      { dayOfWeek: 1, openTime: '10:00', closeTime: '22:00' },
+      { dayOfWeek: 2, openTime: '10:00', closeTime: '22:00' },
+      { dayOfWeek: 3, openTime: '10:00', closeTime: '22:00' },
+      { dayOfWeek: 4, openTime: '10:00', closeTime: '22:00' },
+      { dayOfWeek: 5, openTime: '10:00', closeTime: '22:00' },
+      { dayOfWeek: 6, openTime: '10:00', closeTime: '22:30' },
+      { dayOfWeek: 0, openTime: '10:00', closeTime: '22:30' },
+    ],
+    coordinate: { latitude: 10.7731, longitude: 106.6999 },
+    isOpen: true,
+  },
+];
+
+export const MOCK_REVIEWS: Review[] = [
+  {
+    id: 'rev-001',
+    userId: 'user-001',
+    userName: 'Nguyễn Minh A',
+    rating: 5,
+    comment: 'Phở rất ngon, nước dùng đậm đà. Sẽ quay lại!',
+    createdAt: '2024-06-15T08:30:00Z',
+    updatedAt: '2024-06-15T08:30:00Z',
+  },
+  {
+    id: 'rev-002',
+    userId: 'user-002',
+    userName: 'Trần Thị B',
+    rating: 4,
+    comment: 'Món ăn ngon, phục vụ nhanh. Hơi đông vào cuối tuần.',
+    createdAt: '2024-06-10T12:00:00Z',
+    updatedAt: '2024-06-10T12:00:00Z',
+  },
+];
