@@ -69,3 +69,9 @@ Dự án sử dụng Next.js 14 (App Router) với cấu trúc phân tách rõ r
 ## 4. Ghi chú cho Giai đoạn tiếp theo (Tích hợp API)
 - Khi có API thật từ Backend, cần thay thế dữ liệu trong các file `src/lib/mock/` bằng React Query (thư mục `src/lib/api/` đã được chuẩn bị sẵn).
 - Hình ảnh hiện tại dùng `next/image` với cấu hình Cloudinary (`res.cloudinary.com`) trong `next.config.mjs`. Bắt buộc phải giữ chuẩn này để tối ưu tốc độ load.
+
+## 5. Định hướng phát triển mở rộng (Advanced UI Phase)
+Được ghi chú để triển khai trên một nhánh Git mới (nhằm hỗ trợ tích hợp AI sâu hơn):
+1. **Trang AI Planner Độc lập (`/ai-planner`)**: Nâng cấp từ Chat Widget lên một trang toàn màn hình chuyên dụng để tương tác với AI (Giao diện giống ChatGPT hoặc Perplexity). Cho phép người dùng nhập Prompt phức tạp để tìm thức ăn.
+2. **UI Viết Đánh Giá (Review Modal)**: Chức năng upload ảnh, chọn số sao (1-5) sau khi trải nghiệm quán ăn xong (UGC - User Generated Content).
+3. **UI Xác nhận Đặt bàn (Booking Modal)**: Màn hình nhập số lượng người, ngày, giờ khi bấm vào nút "Đặt bàn ngay" ở trang Chi tiết Quán ăn.

@@ -24,6 +24,7 @@ export function Navbar() {
 
   const navLinks = [
     { name: 'Trang chủ', href: ROUTES.HOME },
+    { name: 'AI Planner', href: '/ai-planner' },
     { name: 'Khám phá', href: '/explore' },
     { name: 'Lộ trình', href: ROUTES.ITINERARY },
     { name: 'Yêu thích', href: '/favorites' },
