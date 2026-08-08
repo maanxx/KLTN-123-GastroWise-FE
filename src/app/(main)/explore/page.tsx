@@ -1,4 +1,4 @@
-import { Filter, Search, SlidersHorizontal } from 'lucide-react';
+import { Filter, Search, SlidersHorizontal, TrendingUp } from 'lucide-react';
 import Link from 'next/link';
 
 import { Button, Input } from '@/components/ui';
@@ -32,6 +32,34 @@ export default function ExplorePage() {
             <Button className="h-14 px-8 rounded-2xl">
               Tìm kiếm
             </Button>
+          </div>
+        </div>
+
+        {/* Featured Collections (M12 Upgrade) */}
+        <div className="mb-12">
+          <div className="mb-4 flex items-center justify-between">
+            <h2 className="flex items-center gap-2 font-heading text-xl font-bold text-slate-900 dark:text-white">
+              <TrendingUp className="h-5 w-5 text-accent-500" />
+              Bộ sưu tập Nổi bật
+            </h2>
+            <button className="text-sm font-semibold text-primary-600 hover:text-primary-700">Xem tất cả</button>
+          </div>
+          <div className="flex snap-x snap-mandatory gap-4 overflow-x-auto pb-4 scrollbar-hide">
+            {[
+              { title: 'Ăn sập Quận 1 dưới 100K', bg: 'from-orange-400 to-red-500', img: 'https://images.unsplash.com/photo-1555126634-323283e090fa?auto=format&fit=crop&w=600&q=80' },
+              { title: 'Top 5 Quán chay thanh tịnh', bg: 'from-emerald-400 to-teal-600', img: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=600&q=80' },
+              { title: 'Cà phê View đẹp cuối tuần', bg: 'from-blue-400 to-indigo-600', img: 'https://images.unsplash.com/photo-1497935586351-b67a49e012bf?auto=format&fit=crop&w=600&q=80' },
+              { title: 'Quán nướng BBQ xèo xèo', bg: 'from-amber-400 to-orange-600', img: 'https://images.unsplash.com/photo-1544025162-81134015f622?auto=format&fit=crop&w=600&q=80' },
+            ].map((collection, idx) => (
+              <div key={idx} className="group relative h-40 w-64 shrink-0 snap-center overflow-hidden rounded-2xl shadow-sm sm:h-48 sm:w-72">
+                <Image src={collection.img} alt={collection.title} fill className="object-cover transition-transform duration-500 group-hover:scale-110" />
+                <div className={`absolute inset-0 bg-gradient-to-t ${collection.bg} opacity-60 mix-blend-multiply`} />
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 to-transparent" />
+                <h3 className="absolute bottom-4 left-4 right-4 font-heading text-lg font-bold text-white shadow-black drop-shadow-md">
+                  {collection.title}
+                </h3>
+              </div>
+            ))}
           </div>
         </div>
 

@@ -1,4 +1,4 @@
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Ticket } from 'lucide-react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
@@ -35,6 +35,24 @@ export default function RestaurantDetailPage({ params }: { params: { id: string 
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
           {/* Main Content (Trái 2 phần) */}
           <div className="lg:col-span-2">
+            
+            {/* Vouchers (M12 Upgrade) */}
+            <div className="mb-8 flex items-center justify-between rounded-2xl bg-gradient-to-r from-amber-400 to-orange-500 px-6 py-4 text-white shadow-md shadow-orange-500/20 relative overflow-hidden">
+              <div className="absolute -left-4 top-1/2 h-8 w-8 -translate-y-1/2 rounded-full bg-primary-50 dark:bg-primary-950" />
+              <div className="absolute -right-4 top-1/2 h-8 w-8 -translate-y-1/2 rounded-full bg-primary-50 dark:bg-primary-950" />
+              
+              <div className="flex items-center gap-4 z-10">
+                <Ticket className="h-8 w-8 opacity-80" />
+                <div>
+                  <h3 className="font-heading font-bold text-lg">Giảm 20% tổng hoá đơn</h3>
+                  <p className="text-sm font-medium text-white/80">Dành riêng cho khách hàng GastroWise</p>
+                </div>
+              </div>
+              <button className="z-10 shrink-0 rounded-full bg-white px-4 py-2 text-sm font-bold text-orange-600 transition-transform active:scale-95 shadow-sm hover:shadow-md">
+                Lưu mã
+              </button>
+            </div>
+
             <RestaurantMenu menu={restaurant.menu} />
             <RestaurantReviews reviews={restaurant.reviews} />
           </div>
