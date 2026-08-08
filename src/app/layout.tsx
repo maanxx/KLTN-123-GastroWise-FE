@@ -1,5 +1,8 @@
 import type { Metadata } from 'next';
 
+import { AiChatWidget } from '@/components/features/ai/AiChatWidget';
+import { Footer, Navbar } from '@/components/layout';
+
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -15,7 +18,14 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="vi" suppressHydrationWarning>
-      <body className="min-h-screen bg-white antialiased dark:bg-slate-950">{children}</body>
+      <body className="flex min-h-screen flex-col bg-primary-50/30 antialiased dark:bg-primary-950">
+        <Navbar />
+        <main className="flex-1 pt-16">
+          {children}
+        </main>
+        <Footer />
+        <AiChatWidget />
+      </body>
     </html>
   );
 }

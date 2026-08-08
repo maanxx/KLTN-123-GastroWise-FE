@@ -3,11 +3,11 @@ const nextConfig = {
   // Bật React Strict Mode để phát hiện lỗi sớm
   reactStrictMode: true,
 
-  // Cấu hình images — thêm domain khi có API thật
+  // Cấu hình images — khai báo các domain được phép lấy ảnh (Chuẩn bảo mật)
   images: {
     remotePatterns: [
-      // Thêm domain ảnh từ API khi cần
-      // { protocol: 'https', hostname: 'api.example.com' },
+      { protocol: 'https', hostname: 'images.unsplash.com' }, // Dùng cho ảnh demo
+      { protocol: 'https', hostname: 'res.cloudinary.com' }, // Dùng cho ảnh thật lưu trên Cloudinary (Miễn phí)
     ],
   },
 

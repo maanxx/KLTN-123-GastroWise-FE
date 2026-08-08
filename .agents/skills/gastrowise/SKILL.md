@@ -307,12 +307,12 @@ export default function ItineraryLoading() {
 
 | Token | Hex | Dùng cho |
 |-------|-----|----------|
-| `primary-500` | `#f97316` | CTA buttons, links, active states |
-| `primary-50` | `#fff7ed` | Hover backgrounds |
-| `secondary-500` | `#14b8a6` | Secondary actions, badges |
-| `accent-500` | `#f59e0b` | Ratings, highlights, stars |
-| `slate-900` | `#0f172a` | Body text (light mode) |
-| `slate-50` | `#f8fafc` | Body text (dark mode) |
+| `primary-500` | `#10b981` | (Emerald) Nút chính, links, sự tươi mát, healthy |
+| `primary-50` | `#ecfdf5` | Background nhẹ khi hover |
+| `secondary-500` | `#f59e0b` | (Amber) Nút phụ, tạo cảm giác thèm ăn, ấm cúng |
+| `accent-500` | `#f97316` | (Orange) Highlight, badge nổi bật, rating |
+| `slate-900` | `#0f172a` | Text màu đậm cho chế độ sáng |
+| `slate-50` | `#f8fafc` | Text màu sáng cho chế độ tối |
 
 ### 5.2 Typography
 
