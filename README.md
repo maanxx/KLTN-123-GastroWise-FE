@@ -1,87 +1,44 @@
-# 🍽️ GastroWise — Frontend Customer
+# GastroWise Frontend 🎨
 
-> **Đề tài KLTN**: Xây dựng hệ thống thông tin trải nghiệm ẩm thực thông minh  
-> **Trường**: Đại học Công nghiệp TP.HCM (IUH)
+Đây là mã nguồn giao diện (Next.js + React) của dự án **GastroWise - Hệ thống thông tin trải nghiệm ẩm thực thông minh**.
 
-## 📋 Mô tả
+## 📌 Yêu cầu hệ thống (Prerequisites)
+1. **Node.js**: Phiên bản v18.x trở lên.
+2. Đã cài đặt và chạy thành công **GastroWise Backend** ở cổng `5000` (Xem hướng dẫn bên repo Backend).
 
-Website cho phép người dùng nhập sở thích món ăn, thời gian, ngân sách → nhận lộ trình ăn uống tối ưu khoảng cách tại TP.HCM. Tích hợp review từ cộng đồng, thống kê và báo cáo.
+---
 
-## 🛠️ Tech Stack
+## 🛠️ Hướng dẫn Cài đặt & Chạy dự án (Dành cho Partner)
 
-- **Framework**: Next.js 14 (App Router)
-- **Language**: TypeScript
-- **Styling**: TailwindCSS
-- **State/Cache**: React Query (TanStack Query) + Zustand
-- **Form**: React Hook Form + Zod
-- **HTTP Client**: Axios
-- **Animation**: Framer Motion
-- **Icons**: Lucide React
-
-## 🚀 Bắt đầu
-
-### Yêu cầu
-- Node.js >= 18
-- npm >= 9
-
-### Cài đặt
-
+### Bước 1: Clone code và cài thư viện
+Mở terminal tại thư mục dự án (GastroWise-FE) và chạy:
 ```bash
-# Clone repo
-git clone https://github.com/maanxx/KLTN-123-GastroWise-FE.git
-cd KLTN-123-GastroWise-FE
-
-# Cài dependencies
 npm install
+```
 
-# Copy file env và điền giá trị
-cp .env.example .env.local
+### Bước 2: Cấu hình biến môi trường (.env.local)
+Tạo một file mới tên là `.env.local` nằm ở **thư mục gốc** (ngang hàng với `package.json`).
+Copy nội dung sau vào file `.env.local`:
 
-# Chạy development server
+```env
+# Địa chỉ API của Backend (Mặc định Backend chạy ở cổng 5000)
+NEXT_PUBLIC_API_URL=http://localhost:5000/api
+```
+
+### Bước 3: Chạy Web
+Sau khi Backend đã chạy thành công, mở một Terminal mới ở thư mục FE và chạy:
+```bash
 npm run dev
 ```
+Trình duyệt sẽ tự động mở hoặc bạn có thể tự truy cập vào địa chỉ: [http://localhost:3000](http://localhost:3000).
 
-Mở [http://localhost:3000](http://localhost:3000) để xem kết quả.
+---
 
-### Scripts
+## 📚 Tài liệu tham khảo (Documentation)
+Bạn có thể đọc thêm các tài liệu phân tích thiết kế, cấu trúc dự án và danh sách thư viện được sử dụng tại thư mục `/docs` trong repo này. Đặc biệt lưu ý:
+- `docs/01-product-requirements.md`: Đọc để hiểu tổng quan các tính năng của Web.
+- `docs/08-project-dependencies.md`: Danh sách các thư viện UI (framer-motion, lucide-react, zustand...) đang dùng để tránh cài trùng lặp.
+- `docs/09-class-diagram.md`: Phân tích thiết kế của hệ thống.
 
-| Script | Mô tả |
-|--------|-------|
-| `npm run dev` | Chạy dev server |
-| `npm run build` | Build production |
-| `npm run lint` | Kiểm tra code |
-| `npm run format` | Format code |
-| `npm run type-check` | Kiểm tra TypeScript |
-
-## 📁 Cấu trúc thư mục
-
-```
-src/
-├── app/            # Next.js App Router (pages)
-├── components/     # React components
-│   ├── ui/         # Atomic components (Button, Input, Card...)
-│   ├── layout/     # Layout components (Navbar, Footer...)
-│   └── features/   # Feature-specific components
-├── hooks/          # Custom React hooks
-├── lib/
-│   ├── api/        # API client & endpoints
-│   ├── constants/  # App constants, routes, query keys
-│   ├── errors/     # Error handling (AppError, tryCatch)
-│   ├── mock/       # Mock data (dev only)
-│   ├── utils/      # Utilities (format, cn, storage)
-│   └── validation/ # Zod schemas
-├── providers/      # React providers
-├── stores/         # Zustand stores
-└── types/          # TypeScript type definitions
-```
-
-## ⚠️ Bảo mật
-
-- **KHÔNG commit** file `.env.local` — đã có trong `.gitignore`
-- **KHÔNG hardcode** URL, API key, token trong source code
-- Pre-commit hook **secretlint** sẽ quét mỗi commit
-- Chỉ dùng **mock/fake data** trong development
-
-## 📄 License
-
-Private — KLTN project
+---
+**Lưu ý:** Giao diện quản trị Admin sẽ được tách riêng ra một Repository Frontend khác để dễ quản lý. Repo FE này chỉ dành cho người dùng cuối (End User).
