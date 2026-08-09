@@ -7,6 +7,20 @@
 
 ## Quy tắc bắt buộc
 
+### Knowledge Base (Đọc trước khi làm)
+- Mọi AI/Developer trước khi bắt đầu code một tính năng MỚI (hoặc khi mới được giao task liên quan đến kiến trúc, nghiệp vụ), BẮT BUỘC phải đọc các file trong thư mục `docs/`.
+  - `docs/01-product-requirements.md`: Nghiệp vụ & Yêu cầu.
+  - `docs/02-architecture-design.md`: Kiến trúc & Tech Stack.
+  - `docs/03-coding-standards.md`: Chuẩn code dự án.
+  - `docs/04-feature-breakdown.md`: Danh sách tính năng và checklist.
+  - `docs/05-microservices-architecture.md`: Chia module Microservices.
+  - `docs/06-security-and-env.md`: Bảo mật và cài đặt biến môi trường.
+  - `docs/07-api-integration.md`: Cấu trúc gọi API (Axios + React Query).
+  - `docs/08-project-dependencies.md`: Quản lý danh sách các tool/thư viện.
+
+### Xử lý Nghiệp vụ & Backend (QUAN TRỌNG)
+- Khi được giao làm tính năng có liên quan đến Backend (gọi API, nghiệp vụ xử lý data), **BẮT BUỘC phải kiểm tra source code Backend** tại thư mục `/Users/thin/Developer/KLTN-123-GastroWise-BE` (kiểm tra routes, controller, format response data) để đảm bảo FE khớp hoàn toàn với BE.
+
 ### Code Style
 1. **Ngôn ngữ**: Comment bằng tiếng Việt, code bằng tiếng Anh
 2. **Components**: PascalCase (`Button.tsx`, `ItineraryCard.tsx`)

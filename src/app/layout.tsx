@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 
 import { AiChatWidget } from '@/components/features/ai/AiChatWidget';
 import { Footer, Navbar } from '@/components/layout';
+import { QueryProvider } from '@/providers/QueryProvider';
 
 import './globals.css';
 
@@ -19,12 +20,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="vi" suppressHydrationWarning>
       <body className="flex min-h-screen flex-col bg-primary-50/30 antialiased dark:bg-primary-950">
-        <Navbar />
-        <main className="flex-1 pt-16">
-          {children}
-        </main>
-        <Footer />
-        <AiChatWidget />
+        <QueryProvider>
+          <Navbar />
+          <main className="flex-1 pt-16">
+            {children}
+          </main>
+          <Footer />
+          <AiChatWidget />
+        </QueryProvider>
       </body>
     </html>
   );
