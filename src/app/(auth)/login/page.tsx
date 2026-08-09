@@ -2,25 +2,42 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 
 import { Button, Input } from '@/components/ui';
 import { ROUTES } from '@/lib/constants';
-import { loginSchema, type LoginInput } from '@/lib/validation';
+import { loginSchema } from '@/lib/validation/auth.schema';
+import type { LoginFormData } from '@/lib/validation/auth.schema';
+import { useLoginMutation } from '@/hooks/queries/useAuth';
+import { useAuthStore } from '@/stores/useAuthStore';
 
 export default function LoginPage() {
+  const router = useRouter();
+  const loginMutation = useLoginMutation();
+  const setLoginState = useAuthStore((state) => state.login);
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-  } = useForm<LoginInput>({
+  } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
   });
 
-  const onSubmit = async (data: LoginInput) => {
-    // TODO: Connect to Auth API
-    console.log('Login data:', data);
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+  const onSubmit = (data: LoginFormData) => {
+    loginMutation.mutate(data, {
+      onSuccess: (response: any) => {
+        if (response && response.user && response.token) {
+          // Lưu token vào localStorage để gửi kèm Header
+          localStorage.setItem('token', response.token);
+          setLoginState(response.user);
+          router.push('/');
+        }
+      },
+      onError: (error: any) => {
+        alert(error?.message || 'Đăng nhập thất bại. Vui lòng thử lại.');
+      },
+    });
   };
 
   return (
@@ -58,7 +75,7 @@ export default function LoginPage() {
           </div>
         </div>
 
-        <Button type="submit" className="w-full" isLoading={isSubmitting}>
+        <Button type="submit" className="w-full" isLoading={isSubmitting || loginMutation.isPending}>
           Đăng nhập
         </Button>
       </form>

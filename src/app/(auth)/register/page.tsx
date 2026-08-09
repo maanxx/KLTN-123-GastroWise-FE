@@ -2,25 +2,42 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 
 import { Button, Input } from '@/components/ui';
 import { ROUTES } from '@/lib/constants';
-import { registerSchema, type RegisterInput } from '@/lib/validation';
+import { registerSchema, type RegisterFormData } from '@/lib/validation/auth.schema';
+import { useRegisterMutation } from '@/hooks/queries/useAuth';
+import { useAuthStore } from '@/stores/useAuthStore';
 
 export default function RegisterPage() {
+  const router = useRouter();
+  const registerMutation = useRegisterMutation();
+  const setLoginState = useAuthStore((state) => state.login);
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-  } = useForm<RegisterInput>({
+  } = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
   });
 
-  const onSubmit = async (data: RegisterInput) => {
-    // TODO: Connect to Auth API
-    console.log('Register data:', data);
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+  const onSubmit = (data: RegisterFormData) => {
+    const { confirm_password, ...submitData } = data;
+    
+    registerMutation.mutate(submitData, {
+      onSuccess: (response: any) => {
+        if (response && response.user && response.token) {
+          localStorage.setItem('token', response.token);
+          setLoginState(response.user);
+          router.push('/');
+        }
+      },
+      onError: (error: any) => {
+        alert(error?.message || 'Đăng ký thất bại. Email có thể đã tồn tại.');
+      },
+    });
   };
 
   return (
@@ -38,8 +55,8 @@ export default function RegisterPage() {
         <Input
           label="Họ và tên"
           placeholder="Nguyễn Văn A"
-          error={errors.fullName?.message}
-          {...register('fullName')}
+          error={errors.full_name?.message}
+          {...register('full_name')}
         />
         
         <Input
@@ -48,6 +65,14 @@ export default function RegisterPage() {
           placeholder="name@example.com"
           error={errors.email?.message}
           {...register('email')}
+        />
+
+        <Input
+          label="Số điện thoại"
+          type="tel"
+          placeholder="0912345678"
+          error={errors.phone?.message}
+          {...register('phone')}
         />
         
         <Input
@@ -62,11 +87,11 @@ export default function RegisterPage() {
           label="Xác nhận mật khẩu"
           type="password"
           placeholder="Nhập lại mật khẩu"
-          error={errors.confirmPassword?.message}
-          {...register('confirmPassword')}
+          error={errors.confirm_password?.message}
+          {...register('confirm_password')}
         />
 
-        <Button type="submit" className="w-full" isLoading={isSubmitting}>
+        <Button type="submit" className="w-full" isLoading={isSubmitting || registerMutation.isPending}>
           Đăng ký
         </Button>
       </form>
