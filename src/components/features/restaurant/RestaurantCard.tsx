@@ -70,7 +70,7 @@ export const RestaurantCard: React.FC<RestaurantCardProps> = ({ restaurant }) =>
           {restaurant.rating_avg && (
             <div className="absolute bottom-3 left-3 text-white flex items-center bg-black/40 px-2 py-1 rounded backdrop-blur-sm">
               <Star className="w-4 h-4 text-yellow-400 fill-yellow-400 mr-1" />
-              <span className="text-sm font-semibold">{Number(restaurant.rating_avg).toFixed(1)}</span>
+              <span className="text-sm font-semibold">{(Number(restaurant.rating_avg) / 2).toFixed(1)}</span>
             </div>
           )}
         </div>

@@ -1,8 +1,41 @@
-import { Map, Navigation, Settings, Trophy, Wallet } from 'lucide-react';
+'use client';
 
+import { Map, Navigation, Settings, Trophy, Wallet, Loader2 } from 'lucide-react';
 import { Card } from '@/components/ui';
+import { useGetProfile } from '@/hooks/queries/useProfile';
+import { useAuthStore } from '@/stores/useAuthStore';
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
 export default function ProfilePage() {
+  const { data: profileResponse, isLoading, isError } = useGetProfile();
+  const { isAuthenticated } = useAuthStore();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      router.push('/login');
+    }
+  }, [isAuthenticated, router]);
+
+  const user = (profileResponse as any)?.data || profileResponse;
+
+  if (isLoading) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary-500" />
+      </div>
+    );
+  }
+
+  if (isError || !user) {
+    return (
+      <div className="flex h-screen items-center justify-center text-red-500">
+        Đã xảy ra lỗi khi tải thông tin cá nhân.
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-primary-50/30 pb-24 pt-8 dark:bg-transparent">
       <div className="container-app max-w-4xl">
@@ -10,14 +43,14 @@ export default function ProfilePage() {
         {/* Header Profile */}
         <div className="mb-8 flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <div className="flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-primary-400 to-primary-600 text-3xl font-bold text-white shadow-lg">
-              TU
+            <div className="flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-primary-400 to-primary-600 text-3xl font-bold text-white shadow-lg uppercase">
+              {user.full_name ? user.full_name.charAt(0) : 'U'}
             </div>
             <div>
               <h1 className="font-heading text-2xl font-bold text-slate-900 dark:text-white">
-                Tuấn Khách Hàng
+                {user.full_name || user.username || 'Khách hàng'}
               </h1>
-              <p className="text-slate-500">Thành viên GastroWise Eco</p>
+              <p className="text-slate-500">{user.email || 'Thành viên GastroWise Eco'}</p>
             </div>
           </div>
           <button className="flex h-10 w-10 items-center justify-center rounded-full bg-white border border-slate-200 text-slate-600 shadow-sm hover:text-primary-600 dark:bg-slate-900 dark:border-slate-800">

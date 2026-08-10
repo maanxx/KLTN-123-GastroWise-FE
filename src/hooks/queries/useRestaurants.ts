@@ -13,6 +13,24 @@ export const useGetRestaurantById = (id: string) => {
   return useQuery({
     queryKey: ['restaurant', id],
     queryFn: () => restaurantApi.getRestaurantById(id),
-    enabled: !!id, // Chỉ gọi khi có ID
+    enabled: !!id, 
+  });
+};
+
+export const useGetRecommendations = (params?: { lat?: number, lng?: number, page?: number, limit?: number }, enabled = true) => {
+  return useQuery({
+    queryKey: ['recommendations', params],
+    queryFn: () => restaurantApi.getRecommendations(params),
+    enabled: enabled,
+    staleTime: 5 * 60 * 1000,
+  });
+};
+
+export const useGetRestaurantMenu = (id: string, enabled = true) => {
+  return useQuery({
+    queryKey: ['restaurantMenu', id],
+    queryFn: () => restaurantApi.getRestaurantMenu(id),
+    enabled: !!id && enabled,
+    staleTime: 5 * 60 * 1000,
   });
 };

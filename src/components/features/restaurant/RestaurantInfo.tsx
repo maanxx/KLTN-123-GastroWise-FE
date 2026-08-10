@@ -7,8 +7,19 @@ import { Card } from '@/components/ui';
 import { BookingModal } from './BookingModal';
 import type { Restaurant } from '@/lib/mock/restaurant';
 
+import dynamic from 'next/dynamic';
+
+const RestaurantMap = dynamic(() => import('./RestaurantMap'), {
+  ssr: false,
+  loading: () => (
+    <div className="h-[250px] w-full rounded-xl mt-6 bg-slate-100 flex items-center justify-center border border-slate-200">
+      <div className="h-8 w-8 rounded-full border-4 border-primary-200 border-t-primary-500 animate-spin"></div>
+    </div>
+  ),
+});
+
 interface RestaurantInfoProps {
-  restaurant: Restaurant;
+  restaurant: any;
 }
 
 export function RestaurantInfo({ restaurant }: RestaurantInfoProps) {
@@ -20,20 +31,19 @@ export function RestaurantInfo({ restaurant }: RestaurantInfoProps) {
       <h2 className="font-heading text-xl font-bold text-slate-900 dark:text-white mb-4">
         Giới thiệu chung
       </h2>
-      <p className="text-slate-600 dark:text-slate-300 mb-8 leading-relaxed">
+      <p className="text-slate-600 dark:text-slate-300 mb-8 leading-relaxed whitespace-pre-wrap">
         {restaurant.description}
       </p>
 
       <div className="flex flex-col space-y-6">
-        {/* Bản đồ Mini (M12 Upgrade) */}
-        <div className="relative h-40 w-full overflow-hidden rounded-2xl border border-slate-200 bg-slate-100 dark:border-slate-800 dark:bg-slate-900 group cursor-pointer">
-          <div className="absolute inset-0 flex flex-col items-center justify-center text-slate-400 group-hover:bg-slate-200/50 transition-colors dark:group-hover:bg-slate-800/50">
-            <div className="h-10 w-10 bg-white dark:bg-slate-800 rounded-full flex items-center justify-center shadow-md mb-2">
-              <MapPin className="h-5 w-5 text-primary-500" />
-            </div>
-            <span className="text-xs font-semibold text-slate-500">Xem bản đồ lớn</span>
-          </div>
-        </div>
+        {/* Bản đồ thật bằng Leaflet */}
+        {restaurant.lat && restaurant.lng && (
+          <RestaurantMap 
+            lat={restaurant.lat} 
+            lng={restaurant.lng} 
+            name={restaurant.name} 
+          />
+        )}
 
         <div className="space-y-4">
           {/* Địa chỉ */}

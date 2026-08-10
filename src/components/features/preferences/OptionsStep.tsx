@@ -1,14 +1,21 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import { useRouter } from 'next/navigation';
 
 import { Button, Input } from '@/components/ui';
 import { DIETARY_OPTIONS } from '@/lib/constants';
 import { usePreferenceStore } from '@/stores/usePreferenceStore';
+import { useGenerateItinerary } from '@/hooks/queries/useItinerary';
+import { useAuthStore } from '@/stores/useAuthStore';
 
 export function OptionsStep() {
+  const router = useRouter();
+  const { isAuthenticated } = useAuthStore();
   const { data, updateData, prevStep } = usePreferenceStore();
   const dietary = data.dietaryOptions || [];
+  
+  const { mutate: generateItinerary, isPending } = useGenerateItinerary();
 
   const toggleDietary = (id: string) => {
     if (dietary.includes(id)) {
@@ -19,9 +26,34 @@ export function OptionsStep() {
   };
 
   const handleSubmit = () => {
-    // TODO: Gắn API call ở đây
-    console.log('Final Data Ready to Generate Itinerary:', data);
-    alert('Dữ liệu đã sẵn sàng! Chờ API AI hoàn thiện...');
+    if (!isAuthenticated) {
+      alert("Vui lòng đăng nhập để tạo lộ trình!");
+      router.push('/login');
+      return;
+    }
+
+    const payload = {
+      title: data.notes ? data.notes.substring(0, 50) : 'Lộ trình từ Preferences',
+      start_time: new Date().toISOString(),
+      end_time: new Date(Date.now() + 4 * 60 * 60 * 1000).toISOString(),
+      budget: data.maxBudget || 500000,
+      lat: 10.7769, // Default to center of HCMC
+      lng: 106.7009
+    };
+
+    generateItinerary(payload, {
+      onSuccess: (res: any) => {
+        const itineraryId = res?.id || res?.data?.id;
+        if (itineraryId) {
+          router.push(`/itinerary/${itineraryId}`);
+        } else {
+          alert('Không tạo được lộ trình, vui lòng thử lại!');
+        }
+      },
+      onError: () => {
+        alert('Lỗi khi kết nối với máy chủ AI. Vui lòng thử lại sau!');
+      }
+    });
   };
 
   return (
@@ -92,11 +124,12 @@ export function OptionsStep() {
       </div>
 
       <div className="flex items-center justify-between pt-6 border-t border-slate-100 dark:border-slate-800">
-        <Button variant="ghost" onClick={prevStep}>
+        <Button variant="ghost" onClick={prevStep} disabled={isPending}>
           Quay lại
         </Button>
         <Button 
           onClick={handleSubmit}
+          isLoading={isPending}
           className="bg-gradient-to-r from-primary-500 to-secondary-500 text-white shadow-lg hover:shadow-xl"
         >
           ✨ AI Ơi, Tạo Lộ Trình!

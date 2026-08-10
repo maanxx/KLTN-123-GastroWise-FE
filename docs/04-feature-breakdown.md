@@ -7,20 +7,13 @@ Dựa trên PRD, đây là danh sách các module cần thực thi cùng với h
 - [ ] **Trang chủ (Landing Page):** Giới thiệu hệ thống, thanh tìm kiếm nhanh, danh sách quán ăn nổi bật/đánh giá cao (Top rated).
 - [ ] **Đăng nhập/Đăng ký:** Form có validate (Zod + RHF). Xử lý lưu JWT token an toàn, lưu thông tin user vào global store (Zustand).
 
-### Module 2: Trải nghiệm người dùng (Diners)
-- [ ] **Quản lý Hồ sơ (Profile):** Cập nhật thông tin cá nhân, cài đặt Sở thích Ẩm thực (Cuisine preferences).
-- [ ] **Tính năng Tối ưu Lộ trình (Core Feature):**
-  - Giao diện (UI): Form chọn [Vị trí bắt đầu], [Bán kính], [Sở thích], [Thời gian (Từ - Đến)], [Ngân sách].
-  - Hiển thị Lộ trình (Itinerary View): Danh sách các điểm đến theo thứ tự (Timeline), hiển thị tổng thời gian và khoảng cách.
-  - Tích hợp Bản đồ: Render Google Map, đặt Markers (Điểm đi, Điểm đến 1, Điểm đến 2), vẽ Polyline đường đi nối các điểm.
-- [ ] **Khám phá Quán ăn (Explore/Search):**
-  - Thanh tìm kiếm (Search bar) tích hợp debounce.
-  - Bộ lọc (Filters): Theo giá, loại món, số sao đánh giá, khoảng cách.
-  - Danh sách dạng Card (Infinity Scroll hoặc Pagination).
-- [ ] **Chi tiết Quán ăn (Restaurant Detail):**
-  - Hiển thị thông tin cơ bản: Tên, ảnh, địa chỉ, giờ mở cửa, menu nổi bật.
-  - Tính năng Community: Xem review, Rating trung bình, Nút "Viết đánh giá", Upload ảnh review.
-  - Nút hành động: "Lưu vào Yêu thích", "Chỉ đường".
+### Module 6: Hồ sơ cá nhân (Profile) - ĐÃ TÍCH HỢP BE
+- [x] **Trang Hồ sơ (`/profile`)**: Hiển thị thông tin người dùng, cài đặt, và **đặc biệt là Thống kê Eco** (Lượng CO2 tiết kiệm được, số km di chuyển tối ưu). 
+
+## Module 2: Khám phá & Gợi ý (Explore & Recommend) - ĐÃ TÍCH HỢP BE
+- [x] **Trang Khám phá (`/explore`)**: Giao diện hiển thị danh sách quán ăn theo dạng thẻ, tích hợp bộ lọc.
+- [x] **Trang Chi tiết Quán ăn (`/restaurant/[id]`)**: Hiển thị thông tin chi tiết (ảnh, địa chỉ, rating, menu, đánh giá).
+- [x] **Trang Lên Lộ trình AI (`/ai-planner`)**: Chatbox tương tác kiểu AI, gợi ý nhà hàng và tự động tạo chuyến đi.
 
 ### Module 3: Quản lý & Chủ nhà hàng (Admin/Investor Dashboard)
 - [ ] **Dashboard Tổng quan:** Biểu đồ (Charts) thống kê lượt truy cập, lượt tìm kiếm lộ trình có đi qua quán, đánh giá trung bình. (Có thể dùng Recharts hoặc Chart.js).
