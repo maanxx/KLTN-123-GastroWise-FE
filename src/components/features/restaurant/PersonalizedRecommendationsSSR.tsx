@@ -1,37 +1,42 @@
 import React from 'react';
 import { RestaurantCard } from './RestaurantCard';
-import { Flame } from 'lucide-react';
+import { Sparkles } from 'lucide-react';
 
-async function fetchFeaturedRestaurants() {
+async function fetchPersonalizedRestaurants() {
   const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
   try {
-    const res = await fetch(`${API_URL}/restaurants?limit=10&rating=gte9&sortBy=diemTrungBinh&order=desc`, {
-      cache: "no-store", // SSR: Lấy dữ liệu mới nhất mỗi lần reload
+    // Gọi API lấy các quán có đánh giá tốt, ưu tiên mở cửa (dùng tham số search=ngon hoặc tags phổ biến)
+    // Thực tế sẽ dùng /recommend của AI, nhưng ở đây dùng filter có sẵn
+    const res = await fetch(`${API_URL}/restaurants?limit=10&rating=8to9&sortBy=diemTrungBinh&order=desc`, {
+      cache: "no-store",
     });
     if (!res.ok) throw new Error('Failed to fetch');
     const data = await res.json();
     return data?.data || [];
   } catch (error) {
-    console.error("Lỗi khi lấy món ăn nổi bật:", error);
+    console.error("Lỗi khi lấy món ăn gợi ý:", error);
     return [];
   }
 }
 
-export const FeaturedRestaurantsSSR = async () => {
-  const restaurants = await fetchFeaturedRestaurants();
+export const PersonalizedRecommendationsSSR = async () => {
+  const restaurants = await fetchPersonalizedRestaurants();
 
   if (!restaurants || restaurants.length === 0) {
     return null;
   }
 
   return (
-    <section className="py-12 bg-white">
+    <section className="py-8 bg-primary-50/30">
       <div className="container mx-auto px-4 max-w-7xl">
-        <div className="flex items-center gap-2 mb-8">
-          <Flame className="w-8 h-8 text-orange-500 fill-orange-500" />
-          <h2 className="text-3xl font-bold text-gray-900">
-            Top Đánh Giá Cao Nhất
-          </h2>
+        <div className="flex items-center gap-2 mb-6">
+          <Sparkles className="w-8 h-8 text-primary-500 fill-primary-500" />
+          <div>
+            <h2 className="text-3xl font-bold text-gray-900">
+              Đề xuất Dành riêng cho bạn
+            </h2>
+            <p className="text-sm text-gray-500 mt-1">Dựa trên các món ngon bạn có thể sẽ thích</p>
+          </div>
         </div>
         
         {/* Horizontal Scrolling Carousel */}

@@ -12,6 +12,8 @@ export interface Restaurant {
   lat: number;
   lng: number;
   distance_m?: number;
+  priceRange?: string;
+  openingTime?: string;
 }
 
 export interface GetRestaurantsParams {
