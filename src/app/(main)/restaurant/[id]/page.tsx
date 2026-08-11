@@ -11,7 +11,6 @@ import {
   RestaurantReviews,
   RestaurantVouchers,
 } from '@/components/features/restaurant';
-import { MOCK_RESTAURANTS } from '@/lib/mock/restaurant';
 import { useGetRestaurantById, useGetRestaurantMenu } from '@/hooks/queries/useRestaurants';
 import { useGetReviews } from '@/hooks/queries/useReviews';
 
@@ -40,34 +39,31 @@ export default function RestaurantDetailPage({ params }: { params: { id: string 
     notFound();
   }
 
-  // Map API data to the UI expected type
-  const mockFallback = MOCK_RESTAURANTS.find(r => r.id === params.id) || MOCK_RESTAURANTS[0];
   const restaurant: any = {
-    ...mockFallback,
-    id: apiRestaurant.id,
-    name: apiRestaurant.name,
-    address: apiRestaurant.address,
+    id: apiRestaurant._id || apiRestaurant.id,
+    name: apiRestaurant.tenQuan || apiRestaurant.name,
+    address: apiRestaurant.diaChi || apiRestaurant.address,
     lat: apiRestaurant.lat,
-    lng: apiRestaurant.lng,
-    coverImage: apiRestaurant.cover_image || mockFallback.coverImage,
-    rating: apiRestaurant.rating_avg ? (Number(apiRestaurant.rating_avg) / 2).toFixed(1) : mockFallback.rating,
-    cuisineTypes: apiRestaurant.cuisine ? [apiRestaurant.cuisine] : mockFallback.cuisineTypes,
-    description: apiRestaurant.description || mockFallback.description || '',
-    phone: apiRestaurant.phone || mockFallback.phone,
+    lng: apiRestaurant.lon || apiRestaurant.lng,
+    coverImage: apiRestaurant.avatarUrl || apiRestaurant.cover_image || `https://picsum.photos/seed/${apiRestaurant._id}/1200/500`,
+    rating: apiRestaurant.diemTrungBinh ? Number(apiRestaurant.diemTrungBinh).toFixed(1) : '5.0',
+    cuisineTypes: apiRestaurant.tags ? apiRestaurant.tags.split(',') : ['Nhà hàng'],
+    description: apiRestaurant.description || '',
+    phone: apiRestaurant.contactPhone || 'Đang cập nhật',
     menu: menu.length > 0 ? menu.map((item: any) => ({
-      id: item.id,
+      id: item._id || item.id,
       name: item.name,
       description: item.description,
       price: Number(item.price),
-      image: item.image_url || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400&q=80',
-    })) : mockFallback.menu,
+      image: item.image || item.image_url || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400&q=80',
+    })) : [],
     reviews: reviews.length > 0 ? reviews.map((rev: any) => ({
-      id: rev.id,
-      author: rev.full_name || 'Người dùng',
-      userAvatar: rev.avatar_url || `https://ui-avatars.com/api/?name=${rev.full_name || 'U'}`,
-      rating: Number(rev.rating),
-      date: new Date(rev.created_at).toLocaleDateString('vi-VN'),
-      content: rev.comment,
+      id: rev._id || rev.id,
+      author: rev.userId?.username || rev.full_name || 'Khách hàng',
+      userAvatar: rev.userId?.picture || rev.avatar_url || `https://ui-avatars.com/api/?name=${rev.full_name || 'U'}`,
+      rating: Number(rev.diemReview || rev.rating || 5),
+      date: new Date(rev.createdAt || rev.created_at || Date.now()).toLocaleDateString('vi-VN'),
+      content: rev.noiDung || rev.comment,
     })) : [],
   };
 

@@ -8,7 +8,8 @@ const nextConfig = {
     remotePatterns: [
       { protocol: 'https', hostname: 'images.unsplash.com' }, // Dùng cho ảnh demo
       { protocol: 'https', hostname: 'res.cloudinary.com' }, // Dùng cho ảnh thật lưu trên Cloudinary (Miễn phí)
-      { protocol: 'https', hostname: 'down-vn.img.susercontent.com' }, // Ảnh cào từ Foody
+      { protocol: 'https', hostname: '**.img.susercontent.com' }, // Dùng Wildcard cho toàn bộ các server ảnh của ShopeeFood
+      { protocol: 'https', hostname: 'picsum.photos' }, // Thêm host ảnh placeholder dự phòng
     ],
   },
 

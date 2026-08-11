@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { Bot, Send, Sparkles, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { restaurantApi } from '@/lib/api/restaurant.api';
 
 export function AiChatWidget() {
   const [isOpen, setIsOpen] = useState(false);
@@ -12,23 +13,27 @@ export function AiChatWidget() {
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
 
-  const handleSend = (e: React.FormEvent) => {
+  const handleSend = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!input.trim()) return;
 
-    // Add user message
-    setMessages(prev => [...prev, { role: 'user', text: input }]);
+    const userMsg = input;
+    setMessages(prev => [...prev, { role: 'user', text: userMsg }]);
     setInput('');
     setIsTyping(true);
 
-    // Simulate AI thinking and responding
-    setTimeout(() => {
-      setMessages(prev => [
-        ...prev, 
-        { role: 'ai', text: 'Dựa trên sở thích của bạn, mình đề xuất quán "Phở Hoà Pasteur" nhé. Nó phù hợp với tiêu chí món Việt và gần khu vực bạn đang đứng. Bạn có muốn mình tạo lộ trình đi đến đó không?' }
-      ]);
+    try {
+      const res = await restaurantApi.chat(userMsg);
+      if (res && res.reply_text) {
+        setMessages(prev => [...prev, { role: 'ai', text: res.reply_text }]);
+      } else {
+        setMessages(prev => [...prev, { role: 'ai', text: 'Xin lỗi, tôi không hiểu ý bạn.' }]);
+      }
+    } catch (error) {
+      setMessages(prev => [...prev, { role: 'ai', text: 'Có lỗi xảy ra khi kết nối máy chủ!' }]);
+    } finally {
       setIsTyping(false);
-    }, 1500);
+    }
   };
 
   return (

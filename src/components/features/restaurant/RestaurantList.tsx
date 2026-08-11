@@ -1,11 +1,12 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useGetRestaurants, useGetRecommendations } from '@/hooks/queries/useRestaurants';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { RestaurantCard } from './RestaurantCard';
 import { Input, Button } from '@/components/ui';
-import { Search, Loader2 } from 'lucide-react';
+import { Search, Loader2, Camera, Upload } from 'lucide-react';
+import { restaurantApi } from '@/lib/api/restaurant.api';
 
 export const RestaurantList = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -13,7 +14,11 @@ export const RestaurantList = () => {
   const [page, setPage] = useState(1);
   const { isAuthenticated } = useAuthStore();
 
-  const isSearching = debouncedSearch.length > 0;
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [imageResults, setImageResults] = useState<any[] | null>(null);
+  const [isSearchingImage, setIsSearchingImage] = useState(false);
+
+  const isSearching = debouncedSearch.length > 0 || imageResults !== null;
 
   const { data: searchResults, isLoading: isSearchLoading, isError: isSearchError } = useGetRestaurants({
     search: debouncedSearch,
@@ -27,15 +32,36 @@ export const RestaurantList = () => {
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     setDebouncedSearch(searchTerm);
+    setImageResults(null);
     setPage(1); // Reset page on search
   };
 
-  const displayRestaurants = isSearching 
-    ? searchResults 
-    : (isAuthenticated ? recommendations : searchResults);
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    
+    setIsSearchingImage(true);
+    try {
+      const result = await restaurantApi.searchByImage(file);
+      if (result && result.data) {
+        setImageResults(result.data);
+      }
+    } catch (error) {
+      alert("Lỗi khi tìm kiếm bằng hình ảnh!");
+    } finally {
+      setIsSearchingImage(false);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    }
+  };
 
-  const isLoading = isSearching ? isSearchLoading : (isAuthenticated ? isRecLoading : isSearchLoading);
-  const isError = isSearching ? isSearchError : (isAuthenticated ? isRecError : isSearchError);
+  const displayRestaurants = imageResults !== null 
+    ? imageResults
+    : (isSearching 
+      ? searchResults 
+      : (isAuthenticated ? recommendations : searchResults));
+
+  const isLoading = isSearchingImage ? true : (isSearching ? isSearchLoading : (isAuthenticated ? isRecLoading : isSearchLoading));
+  const isError = isSearchingImage ? false : (isSearching ? isSearchError : (isAuthenticated ? isRecError : isSearchError));
 
   const finalRestaurants = Array.isArray(displayRestaurants) ? displayRestaurants : (displayRestaurants as any)?.data || [];
   const pagination = (displayRestaurants as any)?.pagination;
@@ -46,10 +72,10 @@ export const RestaurantList = () => {
         <div className="flex flex-col md:flex-row justify-between items-end mb-10 gap-4">
           <div>
             <h2 className="text-3xl font-bold text-gray-900 mb-2">
-              {isSearching ? 'Kết quả tìm kiếm' : (isAuthenticated ? 'Gợi ý dành cho bạn' : 'Khám phá Quán ăn nổi bật')}
+              {isSearching ? 'Kết quả tìm kiếm' : (isAuthenticated ? 'Gợi ý dành cho bạn' : 'Tất cả quán ăn')}
             </h2>
             <p className="text-gray-600">
-              {isSearching ? `Kết quả cho "${debouncedSearch}"` : (isAuthenticated ? 'Dựa trên sở thích của bạn' : 'Những địa điểm ẩm thực được đánh giá cao nhất')}
+              {imageResults !== null ? 'Kết quả tìm kiếm qua hình ảnh AI' : (isSearching ? `Kết quả cho "${debouncedSearch}"` : (isAuthenticated ? 'Dựa trên sở thích của bạn' : 'Những địa điểm ẩm thực được đánh giá cao nhất'))}
             </p>
           </div>
           
@@ -70,6 +96,23 @@ export const RestaurantList = () => {
             <Button type="submit" variant="primary" className="px-3">
               <Search className="w-5 h-5" />
             </Button>
+            <Button 
+              type="button" 
+              variant="outline" 
+              className="px-3 border-slate-300 text-slate-600 hover:bg-slate-100" 
+              title="Tìm bằng hình ảnh (AI)"
+              onClick={() => fileInputRef.current?.click()}
+              disabled={isSearchingImage}
+            >
+              {isSearchingImage ? <Loader2 className="w-5 h-5 animate-spin" /> : <Camera className="w-5 h-5" />}
+            </Button>
+            <input 
+              type="file" 
+              accept="image/*" 
+              className="hidden" 
+              ref={fileInputRef}
+              onChange={handleImageUpload}
+            />
           </form>
         </div>
 

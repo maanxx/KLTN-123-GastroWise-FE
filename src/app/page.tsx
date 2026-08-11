@@ -1,11 +1,22 @@
 import { HeroSection } from '@/components/features/landing';
-import { RestaurantList } from '@/components/features/restaurant/RestaurantList';
+import { FeaturedRestaurantsSSR } from '@/components/features/restaurant/FeaturedRestaurantsSSR';
+import { SearchFilterBar } from '@/components/features/restaurant/SearchFilterBar';
+import { AllRestaurantsSSR } from '@/components/features/restaurant/AllRestaurantsSSR';
 
-export default function HomePage() {
+export default async function HomePage({ searchParams }: { searchParams: { page?: string, search?: string } }) {
+  const page = Number(searchParams.page) || 1;
+  const search = searchParams.search || '';
+
   return (
     <div className="flex flex-col">
       <HeroSection />
-      <RestaurantList />
+      {/* SSR component cuộn ngang */}
+      <FeaturedRestaurantsSSR />
+      
+      {/* Client component tìm kiếm & bộ lọc, bọc SSR List */}
+      <SearchFilterBar>
+        <AllRestaurantsSSR page={page} search={search} />
+      </SearchFilterBar>
     </div>
   );
 }

@@ -1,58 +1,56 @@
-'use client';
-
-import { useState } from 'react';
-import { Filter, Search, SlidersHorizontal, TrendingUp, Loader2 } from 'lucide-react';
-import Link from 'next/link';
 import Image from 'next/image';
+import { TrendingUp, Loader2 } from 'lucide-react';
+import { ExploreControls } from './ExploreControls';
+import { RestaurantCard } from '@/components/features/restaurant/RestaurantCard';
 
-import { Button, Input } from '@/components/ui';
-import { useGetRestaurants } from '@/hooks/queries/useRestaurants';
-
-export default function ExplorePage() {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [activeCategory, setActiveCategory] = useState<string>('Tất cả');
-
-  const { data: restaurantsResponse, isLoading, isError } = useGetRestaurants({
-    search: searchTerm || undefined,
-    cuisine: activeCategory !== 'Tất cả' ? activeCategory : undefined
+async function fetchExploreRestaurants(search: string, category: string, page: number) {
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+  
+  const params = new URLSearchParams({
+    limit: '20',
+    page: page.toString(),
   });
+  
+  if (search) params.set('search', search);
+  // Match with backend query for category/tags. 
+  // Assuming the backend filters by 'search' or 'tags'. 
+  // In our backend, the search parameter searches both name and tags!
+  // So if category != 'Tất cả', we append it to search or pass as a separate parameter if the backend supports it.
+  // ShopeeFood tags are stored in 'tags'. Let's pass it as 'search' for now or 'category' if the backend has it. 
+  // Let's pass it as search. If both exist, combine them.
+  let finalSearch = search;
+  if (category && category !== 'Tất cả') {
+    finalSearch = finalSearch ? `${finalSearch} ${category}` : category;
+  }
+  
+  if (finalSearch) params.set('search', finalSearch);
 
-  // Extract array of restaurants from the Axios response wrapper (which might be nested depending on the exact BE format)
-  // Usually it returns { data: [...] } or just an array.
-  const restaurants = Array.isArray(restaurantsResponse) 
-    ? restaurantsResponse 
-    : (restaurantsResponse as any)?.data || [];
+  try {
+    const res = await fetch(`${API_URL}/restaurants?${params.toString()}`, {
+      cache: "no-store",
+    });
+    if (!res.ok) throw new Error('Failed to fetch');
+    const data = await res.json();
+    return data?.data || [];
+  } catch (error) {
+    console.error("Lỗi khi lấy danh sách quán ăn SSR Explore:", error);
+    return [];
+  }
+}
+
+export default async function ExplorePage({ searchParams }: { searchParams: { search?: string, category?: string, page?: string } }) {
+  const search = searchParams.search || '';
+  const category = searchParams.category || 'Tất cả';
+  const page = Number(searchParams.page) || 1;
+
+  const restaurants = await fetchExploreRestaurants(search, category, page);
 
   return (
     <div className="min-h-screen bg-primary-50/30 pb-24 pt-8 dark:bg-transparent">
       <div className="container-app">
-        {/* Header & Search */}
-        <div className="mb-10 text-center">
-          <h1 className="font-heading text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl dark:text-white">
-            Khám phá Ẩm thực
-          </h1>
-          <p className="mt-2 text-slate-500">
-            Tìm kiếm quán ăn ngon theo sở thích của riêng bạn
-          </p>
-
-          <div className="mx-auto mt-8 flex max-w-2xl items-center gap-2">
-            <div className="relative flex-1">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
-              <Input 
-                placeholder="Tên quán, món ăn, khu vực..." 
-                className="pl-12 h-14 rounded-2xl border-primary-200 focus:border-primary-500 shadow-sm"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-            </div>
-            <Button variant="outline" className="h-14 px-6 rounded-2xl border-primary-200 hover:bg-primary-50">
-              <SlidersHorizontal className="h-5 w-5" />
-            </Button>
-            <Button className="h-14 px-8 rounded-2xl">
-              Tìm kiếm
-            </Button>
-          </div>
-        </div>
+        
+        {/* Client component for Search & Tags */}
+        <ExploreControls />
 
         {/* Featured Collections */}
         <div className="mb-12">
@@ -80,69 +78,15 @@ export default function ExplorePage() {
           </div>
         </div>
 
-        {/* Categories / Filters */}
-        <div className="mb-8 flex flex-wrap items-center justify-center gap-3">
-          {['Tất cả', 'Món Việt', 'Món Âu', 'Chay', 'Gần tôi', 'Đánh giá cao'].map((cat, i) => (
-            <button
-              key={i}
-              onClick={() => setActiveCategory(cat)}
-              className={`rounded-full px-5 py-2 text-sm font-medium transition-colors ${
-                activeCategory === cat 
-                  ? 'bg-primary-500 text-white shadow-md shadow-primary-500/25' 
-                  : 'bg-white text-slate-600 border border-slate-200 hover:border-primary-300 hover:text-primary-600 dark:bg-slate-900 dark:border-slate-800'
-              }`}
-            >
-              {cat}
-            </button>
-          ))}
-        </div>
-
-        {/* Results Grid */}
-        {isLoading ? (
-          <div className="flex justify-center py-20">
-            <Loader2 className="h-8 w-8 animate-spin text-primary-500" />
-          </div>
-        ) : isError ? (
-          <div className="text-center py-10 text-red-500">
-            Đã xảy ra lỗi khi tải dữ liệu quán ăn.
-          </div>
-        ) : restaurants.length === 0 ? (
+        {/* Results Grid - SSR */}
+        {restaurants.length === 0 ? (
           <div className="text-center py-10 text-slate-500">
             Không tìm thấy quán ăn nào phù hợp.
           </div>
         ) : (
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {restaurants.map((restaurant: any) => (
-              <Link key={restaurant.id} href={`/restaurant/${restaurant.id}`} className="group block">
-                <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition-all hover:-translate-y-1 hover:shadow-lg hover:border-primary-300 dark:border-slate-800 dark:bg-slate-900">
-                  <div className="relative aspect-[4/3] overflow-hidden bg-slate-100">
-                    <Image
-                      src={restaurant.cover_image || 'https://images.unsplash.com/photo-1555126634-323283e090fa?w=600&q=80'}
-                      alt={restaurant.name}
-                      fill
-                      className="object-cover transition-transform duration-500 group-hover:scale-110"
-                    />
-                    <div className="absolute right-3 top-3 rounded-full bg-white/90 px-2.5 py-1 text-xs font-bold text-slate-900 backdrop-blur-sm shadow-sm">
-                      ⭐ {restaurant.rating_avg ? (Number(restaurant.rating_avg) / 2).toFixed(1) : 'Mới'}
-                    </div>
-                  </div>
-                  <div className="p-4">
-                    <h3 className="font-heading text-lg font-bold text-slate-900 dark:text-white line-clamp-1">
-                      {restaurant.name}
-                    </h3>
-                    <p className="mt-1 text-sm text-slate-500 line-clamp-1">
-                      {restaurant.address}
-                    </p>
-                    {restaurant.cuisine && (
-                      <div className="mt-3 flex flex-wrap gap-2">
-                        <span className="rounded-md bg-primary-50 px-2 py-1 text-xs font-medium text-primary-600 dark:bg-primary-900/30 dark:text-primary-400">
-                          {restaurant.cuisine}
-                        </span>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </Link>
+              <RestaurantCard key={restaurant.id || restaurant._id} restaurant={restaurant} />
             ))}
           </div>
         )}
