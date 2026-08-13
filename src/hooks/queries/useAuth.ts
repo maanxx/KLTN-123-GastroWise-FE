@@ -18,7 +18,7 @@ export const useLoginMutation = () => {
 
 export const useRegisterMutation = () => {
   return useMutation({
-    mutationFn: async (credentials: Omit<RegisterFormData, 'confirm_password'>) => {
+    mutationFn: async (credentials: any) => {
       return await axiosClient.post<any, LoginResponse>('/auth/register', credentials);
     },
   });

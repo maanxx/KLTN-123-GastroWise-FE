@@ -1,14 +1,54 @@
+'use client';
+
 import { Heart, MapPin, Star } from 'lucide-react';
 import Image from 'next/image';
+import { useState, useEffect } from 'react';
+import { toast } from 'sonner';
 
 import { Button } from '@/components/ui';
-import type { Restaurant } from '@/lib/mock/restaurant';
+import type { Restaurant } from '@/types/restaurant';
+import { useAuthStore } from '@/stores/useAuthStore';
+import { useGetFavorites, useToggleFavorite } from '@/hooks/queries/useFavorite';
 
 interface RestaurantHeroProps {
   restaurant: Restaurant;
 }
 
 export function RestaurantHero({ restaurant }: RestaurantHeroProps) {
+  const { isAuthenticated } = useAuthStore();
+  const { data: favorites } = useGetFavorites();
+  const toggleMutation = useToggleFavorite();
+  
+  const [isFavorited, setIsFavorited] = useState(false);
+
+  useEffect(() => {
+    if (favorites) {
+      setIsFavorited(favorites.some((f: any) => f.id === restaurant.id || f.id === (restaurant as any)._id));
+    }
+  }, [favorites, restaurant]);
+
+  const handleToggleFavorite = () => {
+    if (!isAuthenticated) {
+      toast.info('Vui lòng đăng nhập để lưu quán ăn!');
+      return;
+    }
+    
+    setIsFavorited(!isFavorited);
+    const rId = (restaurant as any)._id || restaurant.id;
+    toggleMutation.mutate(rId, {
+      onSuccess: (data) => {
+        if (data.isFavorite) {
+          toast.success(data.message || 'Đã thêm vào mục yêu thích');
+        } else {
+          toast.success(data.message || 'Đã bỏ lưu quán ăn');
+        }
+      },
+      onError: () => {
+        setIsFavorited(isFavorited);
+        toast.error('Có lỗi xảy ra khi lưu quán ăn.');
+      }
+    });
+  };
   return (
     <div className="relative h-[40vh] min-h-[300px] w-full lg:h-[50vh]">
       {/* Cover Image */}
@@ -57,9 +97,16 @@ export function RestaurantHero({ restaurant }: RestaurantHeroProps) {
           </div>
 
           <div className="shrink-0">
-            <Button className="bg-white/10 text-white backdrop-blur-md hover:bg-white/20 border border-white/20">
-              <Heart className="mr-2 h-5 w-5" />
-              Lưu quán
+            <Button 
+              onClick={handleToggleFavorite}
+              className={`backdrop-blur-md border border-white/20 transition-all ${
+                isFavorited 
+                  ? 'bg-white text-red-500 hover:bg-slate-100 hover:text-red-600' 
+                  : 'bg-white/10 text-white hover:bg-white/20'
+              }`}
+            >
+              <Heart className={`mr-2 h-5 w-5 ${isFavorited ? 'fill-red-500' : ''}`} />
+              {isFavorited ? 'Đã lưu' : 'Lưu quán'}
             </Button>
           </div>
         </div>

@@ -4,6 +4,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
+import { useTranslation } from '@/hooks/useTranslation';
 
 import { Button, Input } from '@/components/ui';
 import { ROUTES } from '@/lib/constants';
@@ -14,6 +16,7 @@ import { useAuthStore } from '@/stores/useAuthStore';
 
 export default function LoginPage() {
   const router = useRouter();
+  const { t } = useTranslation();
   const loginMutation = useLoginMutation();
   const setLoginState = useAuthStore((state) => state.login);
   const {
@@ -31,11 +34,12 @@ export default function LoginPage() {
           // Lưu token vào localStorage để gửi kèm Header
           localStorage.setItem('token', response.token);
           setLoginState(response.user);
+          toast.success(t('login.success') as string);
           router.push('/');
         }
       },
       onError: (error: any) => {
-        alert(error?.message || 'Đăng nhập thất bại. Vui lòng thử lại.');
+        toast.error(error?.message || (t('login.fail') as string));
       },
     });
   };
@@ -44,16 +48,16 @@ export default function LoginPage() {
     <>
       <div className="mb-8">
         <h1 className="font-heading text-3xl font-bold tracking-tight text-slate-900 dark:text-white">
-          Chào mừng trở lại
+          {t('login.welcome_back')}
         </h1>
         <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
-          Đăng nhập vào tài khoản GastroWise của bạn
+          {t('login.description')}
         </p>
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
         <Input
-          label="Email"
+          label={t('login.email') as string}
           type="email"
           placeholder="name@example.com"
           error={errors.email?.message}
@@ -62,7 +66,7 @@ export default function LoginPage() {
         
         <div className="space-y-1">
           <Input
-            label="Mật khẩu"
+            label={t('login.password') as string}
             type="password"
             placeholder="••••••••"
             error={errors.password?.message}
@@ -70,20 +74,20 @@ export default function LoginPage() {
           />
           <div className="flex justify-end">
             <Link href="#" className="text-xs font-medium text-primary-600 hover:text-primary-500">
-              Quên mật khẩu?
+              {t('login.forgot_password')}
             </Link>
           </div>
         </div>
 
         <Button type="submit" className="w-full" isLoading={isSubmitting || loginMutation.isPending}>
-          Đăng nhập
+          {t('login.submit')}
         </Button>
       </form>
 
       <div className="mt-8 text-center text-sm text-slate-600 dark:text-slate-400">
-        Chưa có tài khoản?{' '}
+        {t('login.no_account')}{' '}
         <Link href={ROUTES.REGISTER} className="font-semibold text-primary-600 hover:text-primary-500">
-          Đăng ký ngay
+          {t('login.register_now')}
         </Link>
       </div>
     </>

@@ -5,7 +5,7 @@ import { Clock, MapPin, Phone } from 'lucide-react';
 
 import { Card } from '@/components/ui';
 import { BookingModal } from './BookingModal';
-import type { Restaurant } from '@/lib/mock/restaurant';
+import type { Restaurant } from '@/types/restaurant';
 
 import dynamic from 'next/dynamic';
 
@@ -79,15 +79,26 @@ export function RestaurantInfo({ restaurant }: RestaurantInfoProps) {
         </div>
       </div>
 
-      {/* Nút Đặt bàn (M12 Upgrade) */}
+      {/* Nút Đặt món */}
       <div className="mt-8 pt-6 border-t border-slate-100 dark:border-slate-800">
-        <button 
-          onClick={() => setIsBookingModalOpen(true)}
-          className="w-full flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-primary-500 to-primary-600 py-3.5 text-sm font-bold text-white shadow-lg shadow-primary-500/25 transition-all hover:scale-[1.02] hover:shadow-xl active:scale-95"
-        >
-          Đặt bàn ngay
-        </button>
-        <p className="mt-3 text-center text-xs text-slate-500">Giữ chỗ miễn phí, thanh toán sau</p>
+        {restaurant.shopeeUrl ? (
+          <a 
+            href={restaurant.shopeeUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="w-full flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-orange-500 to-red-500 py-3.5 text-sm font-bold text-white shadow-lg shadow-orange-500/25 transition-all hover:scale-[1.02] hover:shadow-xl active:scale-95"
+          >
+            Đặt món ngay (ShopeeFood)
+          </a>
+        ) : (
+          <button 
+            onClick={() => setIsBookingModalOpen(true)}
+            className="w-full flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-primary-500 to-primary-600 py-3.5 text-sm font-bold text-white shadow-lg shadow-primary-500/25 transition-all hover:scale-[1.02] hover:shadow-xl active:scale-95"
+          >
+            Đặt món ngay
+          </button>
+        )}
+        <p className="mt-3 text-center text-xs text-slate-500">Giao hàng nhanh chóng tận nơi</p>
       </div>
     </Card>
     <BookingModal 

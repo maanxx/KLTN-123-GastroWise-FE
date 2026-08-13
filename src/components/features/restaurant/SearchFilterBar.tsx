@@ -7,6 +7,7 @@ import { Search, Loader2, Camera } from 'lucide-react';
 import { restaurantApi } from '@/lib/api/restaurant.api';
 import { RestaurantCard } from './RestaurantCard';
 import { useAuthStore } from '@/stores/useAuthStore';
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface SearchFilterBarProps {
   children: React.ReactNode;
@@ -21,6 +22,7 @@ export const SearchFilterBar: React.FC<SearchFilterBarProps> = ({ children }) =>
   const [imageResults, setImageResults] = useState<any[] | null>(null);
   const [isSearchingImage, setIsSearchingImage] = useState(false);
   const { isAuthenticated } = useAuthStore();
+  const { t } = useTranslation();
   
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -77,17 +79,17 @@ export const SearchFilterBar: React.FC<SearchFilterBarProps> = ({ children }) =>
         <div className="flex flex-col md:flex-row justify-between items-end mb-10 gap-4">
           <div>
             <h2 className="text-3xl font-bold text-gray-900 mb-2">
-              {imageResults !== null ? 'Kết quả tìm kiếm AI' : (isSearching ? 'Kết quả tìm kiếm' : (isAuthenticated ? 'Gợi ý dành cho bạn' : 'Tất cả quán ăn'))}
+              {imageResults !== null ? t('home.search_ai_result') : (isSearching ? t('home.search_result') : (isAuthenticated ? t('home.suggest_for_you') : t('home.all_restaurants')))}
             </h2>
             <p className="text-gray-600">
-              {imageResults !== null ? 'Kết quả tìm kiếm qua hình ảnh AI' : (isSearching ? `Kết quả cho "${currentSearch}"` : (isAuthenticated ? 'Dựa trên sở thích của bạn' : 'Những địa điểm ẩm thực được đánh giá cao nhất'))}
+              {imageResults !== null ? t('home.search_ai_desc') : (isSearching ? `${t('home.search_for')} "${currentSearch}"` : (isAuthenticated ? t('home.suggest_desc') : t('home.all_desc')))}
             </p>
           </div>
           
           <form onSubmit={handleSearch} className="flex w-full md:w-auto max-w-sm gap-2">
             <Input
               type="text"
-              placeholder="Tìm quán ăn, món ăn..."
+              placeholder={t('home.search_placeholder') as string}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full bg-white"
@@ -99,7 +101,7 @@ export const SearchFilterBar: React.FC<SearchFilterBarProps> = ({ children }) =>
               type="button" 
               variant="outline" 
               className="px-3 border-slate-300 text-slate-600 hover:bg-slate-100" 
-              title="Tìm bằng hình ảnh (AI)"
+              title={t('home.search_image_btn') as string}
               onClick={() => fileInputRef.current?.click()}
               disabled={isSearchingImage}
             >
@@ -119,7 +121,7 @@ export const SearchFilterBar: React.FC<SearchFilterBarProps> = ({ children }) =>
         {isSearchingImage ? (
           <div className="flex flex-col items-center justify-center py-20">
             <Loader2 className="w-10 h-10 animate-spin text-primary-600 mb-4" />
-            <p className="text-gray-500">AI đang phân tích hình ảnh...</p>
+            <p className="text-gray-500">{t('home.analyzing')}</p>
           </div>
         ) : imageResults !== null ? (
            imageResults.length > 0 ? (
@@ -130,13 +132,13 @@ export const SearchFilterBar: React.FC<SearchFilterBarProps> = ({ children }) =>
                  ))}
                </div>
                <div className="mt-8 flex justify-center">
-                  <Button variant="outline" onClick={() => setImageResults(null)}>Xóa kết quả tìm kiếm ảnh</Button>
+                  <Button variant="outline" onClick={() => setImageResults(null)}>{t('home.clear_search')}</Button>
                </div>
              </>
            ) : (
              <div className="text-center py-20 bg-white rounded-xl shadow-sm border border-gray-100">
-               <p className="text-gray-500 font-medium">Không tìm thấy quán ăn nào giống với ảnh.</p>
-               <Button variant="outline" className="mt-4" onClick={() => setImageResults(null)}>Quay lại</Button>
+               <p className="text-gray-500 font-medium">{t('home.not_found')}</p>
+               <Button variant="outline" className="mt-4" onClick={() => setImageResults(null)}>{t('home.back')}</Button>
              </div>
            )
         ) : (

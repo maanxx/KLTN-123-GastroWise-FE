@@ -25,3 +25,9 @@ export const useUpdateProfile = () => {
     },
   });
 };
+
+export const useUploadAvatar = () => {
+  return useMutation({
+    mutationFn: (file: File) => profileApi.uploadAvatar(file),
+  });
+};

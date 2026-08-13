@@ -24,9 +24,24 @@ export default function RegisterPage() {
   });
 
   const onSubmit = (data: RegisterFormData) => {
-    const { confirm_password, ...submitData } = data;
-    
-    registerMutation.mutate(submitData, {
+    const { confirm_password, full_name, ...submitData } = data;
+
+    // Backend yêu cầu bắt buộc phải có username (unique), nên ta tạo tạm từ email
+    const username = data.email.split('@')[0] + Math.floor(Math.random() * 10000);
+
+    // Tách Họ và Tên
+    const nameParts = full_name.trim().split(' ');
+    const firstName = nameParts.pop() || '';
+    const lastName = nameParts.join(' ');
+
+    const payload = {
+      ...submitData,
+      username,
+      firstName,
+      lastName
+    };
+
+    registerMutation.mutate(payload, {
       onSuccess: (response: any) => {
         if (response && response.user && response.token) {
           localStorage.setItem('token', response.token);
@@ -58,7 +73,7 @@ export default function RegisterPage() {
           error={errors.full_name?.message}
           {...register('full_name')}
         />
-        
+
         <Input
           label="Email"
           type="email"
@@ -74,7 +89,7 @@ export default function RegisterPage() {
           error={errors.phone?.message}
           {...register('phone')}
         />
-        
+
         <Input
           label="Mật khẩu"
           type="password"
@@ -82,7 +97,7 @@ export default function RegisterPage() {
           error={errors.password?.message}
           {...register('password')}
         />
-        
+
         <Input
           label="Xác nhận mật khẩu"
           type="password"

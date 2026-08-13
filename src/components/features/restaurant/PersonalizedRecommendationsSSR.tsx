@@ -2,38 +2,39 @@ import React from 'react';
 import { RestaurantCard } from './RestaurantCard';
 import { SectionTitle } from './SectionTitle';
 
-async function fetchFeaturedRestaurants() {
+async function fetchPersonalizedRestaurants() {
   const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
   try {
-    const res = await fetch(`${API_URL}/restaurants?limit=10&rating=gte9&sortBy=diemTrungBinh&order=desc`, {
-      cache: "no-store", // SSR: Lấy dữ liệu mới nhất mỗi lần reload
+    const res = await fetch(`${API_URL}/restaurants?limit=10&rating=8to9&sortBy=diemTrungBinh&order=desc`, {
+      cache: "no-store",
     });
     if (!res.ok) throw new Error('Failed to fetch');
     const data = await res.json();
     return data?.data || [];
   } catch (error) {
-    console.error("Lỗi khi lấy món ăn nổi bật:", error);
+    console.error("Lỗi khi lấy món ăn gợi ý:", error);
     return [];
   }
 }
 
-export const FeaturedRestaurantsSSR = async () => {
-  const restaurants = await fetchFeaturedRestaurants();
+export const PersonalizedRecommendationsSSR = async () => {
+  const restaurants = await fetchPersonalizedRestaurants();
 
   if (!restaurants || restaurants.length === 0) {
     return null;
   }
 
   return (
-    <section className="py-12 bg-white">
+    <section className="py-8 bg-primary-50/30">
       <div className="container mx-auto px-4 max-w-7xl">
         <SectionTitle 
-          translationKey="home.top_rated"
-          defaultText="Top Đánh Giá Cao Nhất"
-          iconType="flame"
+          translationKey="home.personalized"
+          defaultText="Đề xuất Dành riêng cho bạn"
+          iconType="sparkles"
+          subtitleTranslationKey="home.personalized_desc"
+          subtitle="Dựa trên các món ngon bạn có thể sẽ thích"
         />
         
-        {/* Horizontal Scrolling Carousel */}
         <div className="relative -mx-4 px-4 sm:mx-0 sm:px-0">
           <div className="flex overflow-x-auto gap-6 pb-6 snap-x snap-mandatory scroll-smooth [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
             {restaurants.map((restaurant: any) => (

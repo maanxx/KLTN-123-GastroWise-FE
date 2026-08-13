@@ -2,8 +2,11 @@
 
 import { Menu, UtensilsCrossed, Bell } from 'lucide-react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { toast } from 'sonner';
+import { useTranslation } from '@/hooks/useTranslation';
+import { useLangStore } from '@/stores/useLangStore';
 
 import { Button } from '@/components/ui';
 import { ROUTES } from '@/lib/constants';
@@ -13,9 +16,13 @@ import { useGetNotifications, useMarkNotificationAsRead } from '@/hooks/queries/
 
 export function Navbar() {
   const pathname = usePathname();
+  const router = useRouter();
   const [isScrolled, setIsScrolled] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
   const { isAuthenticated, user, logout } = useAuthStore();
+  const { t } = useTranslation();
+  const toggleLang = useLangStore((state) => state.toggleLang);
+  const currentLang = useLangStore((state) => state.lang);
   
   const { data: notifications } = useGetNotifications();
   const markAsReadMutation = useMarkNotificationAsRead();
@@ -36,12 +43,13 @@ export function Navbar() {
   }, []);
 
   const navLinks = [
-    { name: 'Trang chủ', href: ROUTES.HOME },
-    { name: 'AI Planner', href: '/ai-planner' },
-    { name: 'Khám phá', href: '/explore' },
-    { name: 'Lộ trình', href: ROUTES.ITINERARY },
-    { name: 'Yêu thích', href: '/favorites' },
-    { name: 'Hồ sơ', href: '/profile' },
+    { name: t('navbar.home'), href: ROUTES.HOME },
+    { name: t('navbar.ai_planner'), href: '/ai-planner' },
+    { name: t('navbar.explore'), href: '/explore' },
+    { name: t('navbar.itinerary'), href: ROUTES.ITINERARY },
+    { name: t('navbar.favorites'), href: '/favorites' },
+    { name: t('navbar.about_us'), href: '/about' },
+    { name: t('navbar.profile'), href: '/profile' },
   ];
 
   return (
@@ -104,15 +112,15 @@ export function Navbar() {
                 {showNotifications && (
                   <div className="absolute right-0 mt-2 w-80 bg-white rounded-xl shadow-lg border border-gray-100 py-2 z-50 overflow-hidden">
                     <div className="px-4 py-3 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
-                      <h3 className="font-bold text-gray-800">Thông báo {unreadCount > 0 && <span className="ml-1 bg-red-100 text-red-600 py-0.5 px-2 rounded-full text-xs">{unreadCount} mới</span>}</h3>
+                      <h3 className="font-bold text-gray-800">{t('navbar.notifications')} {unreadCount > 0 && <span className="ml-1 bg-red-100 text-red-600 py-0.5 px-2 rounded-full text-xs">{unreadCount} mới</span>}</h3>
                       {unreadCount > 0 && (
-                        <button onClick={handleMarkAllAsRead} className="text-xs text-primary-600 hover:underline font-medium">Đánh dấu đã đọc</button>
+                        <button onClick={handleMarkAllAsRead} className="text-xs text-primary-600 hover:underline font-medium">{t('navbar.mark_all_read')}</button>
                       )}
                     </div>
                     <div className="max-h-[300px] overflow-y-auto">
                       {!notifications || notifications.length === 0 ? (
                         <div className="px-4 py-8 text-center text-gray-500 text-sm">
-                          Bạn không có thông báo nào.
+                          {t('navbar.no_notifications')}
                         </div>
                       ) : (
                         notifications.map((notif) => (
@@ -129,17 +137,20 @@ export function Navbar() {
                       )}
                     </div>
                     <div className="px-4 py-2 border-t border-gray-100 text-center bg-gray-50/50">
-                      <button className="text-xs text-primary-600 font-medium hover:underline">Xem tất cả thông báo</button>
+                      <button className="text-xs text-primary-600 font-medium hover:underline">{t('navbar.view_all_notifications')}</button>
                     </div>
                   </div>
                 )}
               </div>
 
-              <Link href="/profile" className="hidden sm:flex items-center gap-2 group">
-                <div className="w-8 h-8 rounded-full bg-primary-100 text-primary-600 flex items-center justify-center font-bold">
-                  {user?.full_name ? user.full_name.charAt(0).toUpperCase() : 'U'}
+              <Link href="/profile" className="hidden sm:flex items-center gap-2 group" title="Hồ sơ cá nhân">
+                <div className="w-8 h-8 rounded-full bg-primary-100 text-primary-600 flex items-center justify-center font-bold overflow-hidden transition-transform group-hover:scale-105">
+                  {user?.picture ? (
+                    <img src={user.picture} alt="Avatar" className="w-full h-full object-cover" />
+                  ) : (
+                    <span>{user?.full_name ? user.full_name.charAt(0).toUpperCase() : (user?.username || user?.email || 'U').charAt(0).toUpperCase()}</span>
+                  )}
                 </div>
-                <span className="text-sm font-medium text-slate-700 hidden lg:block group-hover:text-primary-600">{user?.full_name}</span>
               </Link>
               <Button 
                 variant="ghost" 
@@ -148,23 +159,38 @@ export function Navbar() {
                 onClick={() => {
                   logout();
                   localStorage.removeItem('token');
-                  window.location.href = '/';
+                  toast.success(t('navbar.logout_success') as string);
+                  router.push('/');
                 }}
               >
-                Đăng xuất
+                {t('navbar.logout')}
               </Button>
             </>
           ) : (
             <Link href={ROUTES.LOGIN} className="hidden sm:block">
               <Button variant="ghost" size="sm">
-                Đăng nhập
+                {t('navbar.login')}
               </Button>
             </Link>
           )}
 
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            onClick={toggleLang}
+            className="w-10 hover:bg-slate-100 transition-colors rounded-full overflow-hidden p-2"
+            title="Đổi ngôn ngữ / Change language"
+          >
+            <img 
+              src={currentLang === 'vi' ? 'https://flagcdn.com/w40/vn.png' : 'https://flagcdn.com/w40/gb.png'} 
+              alt={currentLang === 'vi' ? 'Tiếng Việt' : 'English'} 
+              className="w-full h-auto rounded-sm object-cover"
+            />
+          </Button>
+
           <Link href={ROUTES.PREFERENCES}>
             <Button size="sm" className="hidden sm:flex">
-              Tạo lộ trình ngay
+              {t('navbar.create_itinerary')}
             </Button>
           </Link>
           
