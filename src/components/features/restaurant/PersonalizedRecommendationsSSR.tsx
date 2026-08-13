@@ -1,12 +1,10 @@
 import React from 'react';
 import { RestaurantCard } from './RestaurantCard';
-import { Sparkles } from 'lucide-react';
+import { SectionTitle } from './SectionTitle';
 
 async function fetchPersonalizedRestaurants() {
   const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
   try {
-    // Gọi API lấy các quán có đánh giá tốt, ưu tiên mở cửa (dùng tham số search=ngon hoặc tags phổ biến)
-    // Thực tế sẽ dùng /recommend của AI, nhưng ở đây dùng filter có sẵn
     const res = await fetch(`${API_URL}/restaurants?limit=10&rating=8to9&sortBy=diemTrungBinh&order=desc`, {
       cache: "no-store",
     });
@@ -29,17 +27,14 @@ export const PersonalizedRecommendationsSSR = async () => {
   return (
     <section className="py-8 bg-primary-50/30">
       <div className="container mx-auto px-4 max-w-7xl">
-        <div className="flex items-center gap-2 mb-6">
-          <Sparkles className="w-8 h-8 text-primary-500 fill-primary-500" />
-          <div>
-            <h2 className="text-3xl font-bold text-gray-900">
-              Đề xuất Dành riêng cho bạn
-            </h2>
-            <p className="text-sm text-gray-500 mt-1">Dựa trên các món ngon bạn có thể sẽ thích</p>
-          </div>
-        </div>
+        <SectionTitle 
+          translationKey="home.personalized"
+          defaultText="Đề xuất Dành riêng cho bạn"
+          iconType="sparkles"
+          subtitleTranslationKey="home.personalized_desc"
+          subtitle="Dựa trên các món ngon bạn có thể sẽ thích"
+        />
         
-        {/* Horizontal Scrolling Carousel */}
         <div className="relative -mx-4 px-4 sm:mx-0 sm:px-0">
           <div className="flex overflow-x-auto gap-6 pb-6 snap-x snap-mandatory scroll-smooth [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
             {restaurants.map((restaurant: any) => (

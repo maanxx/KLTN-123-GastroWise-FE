@@ -4,9 +4,11 @@ import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Star, MapPin, Heart, Clock, DollarSign } from 'lucide-react';
+import { toast } from 'sonner';
 import { Card } from '@/components/ui';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { useGetFavorites, useToggleFavorite } from '@/hooks/queries/useFavorite';
+import { useTranslation } from '@/hooks/useTranslation';
 import type { Restaurant } from '@/lib/api/restaurant.api';
 
 interface RestaurantCardProps {
@@ -18,6 +20,7 @@ export const RestaurantCard: React.FC<RestaurantCardProps> = ({ restaurant, acti
   const { isAuthenticated } = useAuthStore();
   const { data: favorites } = useGetFavorites();
   const toggleMutation = useToggleFavorite();
+  const { t } = useTranslation();
   
   const [isFavorited, setIsFavorited] = useState(false);
 
@@ -27,25 +30,32 @@ export const RestaurantCard: React.FC<RestaurantCardProps> = ({ restaurant, acti
     }
   }, [favorites, restaurant]);
 
+  const rId = (restaurant as any)._id || restaurant.id;
+
   const handleToggleFavorite = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     
     if (!isAuthenticated) {
-      alert('Vui lòng đăng nhập để lưu quán ăn!');
+      toast.info('Vui lòng đăng nhập để lưu quán ăn!');
       return;
     }
     
     setIsFavorited(!isFavorited);
-    toggleMutation.mutate(restaurant.id, {
+    toggleMutation.mutate(rId, {
+      onSuccess: (data) => {
+        if (data.isFavorite) {
+          toast.success(data.message || 'Đã thêm vào mục yêu thích');
+        } else {
+          toast.success(data.message || 'Đã bỏ lưu quán ăn');
+        }
+      },
       onError: () => {
         setIsFavorited(isFavorited);
-        alert('Có lỗi xảy ra khi lưu quán ăn.');
+        toast.error('Có lỗi xảy ra khi lưu quán ăn.');
       }
     });
   };
-
-  const rId = (restaurant as any)._id || restaurant.id;
   const placeholderImage = `https://picsum.photos/seed/${rId}/600/400`;
   const imageSrc = (restaurant as any).avatarUrl || restaurant.cover_image || placeholderImage;
   const name = (restaurant as any).tenQuan || restaurant.name;
@@ -107,7 +117,7 @@ export const RestaurantCard: React.FC<RestaurantCardProps> = ({ restaurant, acti
                   key={idx}
                   className="inline-flex px-2 py-0.5 text-xs font-medium rounded-md border border-primary-500 bg-primary-50 text-primary-700 dark:bg-primary-500/10 dark:text-primary-400"
                 >
-                  {tag}
+                  {t(`tag.${tag}`, tag)}
                 </span>
               ))}
             </div>

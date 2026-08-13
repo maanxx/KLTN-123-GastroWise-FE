@@ -1,6 +1,6 @@
 import React from 'react';
 import { RestaurantCard } from './RestaurantCard';
-import { Flame } from 'lucide-react';
+import { SectionTitle } from './SectionTitle';
 
 async function fetchFeaturedRestaurants() {
   const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
@@ -27,12 +27,11 @@ export const FeaturedRestaurantsSSR = async () => {
   return (
     <section className="py-12 bg-white">
       <div className="container mx-auto px-4 max-w-7xl">
-        <div className="flex items-center gap-2 mb-8">
-          <Flame className="w-8 h-8 text-orange-500 fill-orange-500" />
-          <h2 className="text-3xl font-bold text-gray-900">
-            Top Đánh Giá Cao Nhất
-          </h2>
-        </div>
+        <SectionTitle 
+          translationKey="home.top_rated"
+          defaultText="Top Đánh Giá Cao Nhất"
+          iconType="flame"
+        />
         
         {/* Horizontal Scrolling Carousel */}
         <div className="relative -mx-4 px-4 sm:mx-0 sm:px-0">

@@ -29,7 +29,7 @@ export default function AiPlannerPage() {
     // Tạo payload mẫu (do UI chỉ có 1 ô chat, ta sẽ giả lập các tham số khác)
     // Toạ độ mặc định ở trung tâm Q1, TP.HCM
     const payload = {
-      title: prompt.substring(0, 50),
+      prompt: prompt,
       start_time: new Date().toISOString(),
       end_time: new Date(Date.now() + 4 * 60 * 60 * 1000).toISOString(),
       budget: 500000,
@@ -39,8 +39,8 @@ export default function AiPlannerPage() {
 
     generateItinerary(payload, {
       onSuccess: (data: any) => {
-        // Lấy ID trả về (phụ thuộc vào cấu trúc response, giả sử data.id hoặc data.data.id)
-        const itineraryId = data?.id || data?.data?.id;
+        // Lấy ID trả về (phụ thuộc vào cấu trúc response, giả sử data.id hoặc data.data.id hoặc data._id)
+        const itineraryId = data?._id || data?.id || data?.data?.id || data?.data?._id;
         if (itineraryId) {
           router.push(`/itinerary/${itineraryId}`);
         } else {

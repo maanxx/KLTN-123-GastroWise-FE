@@ -4,22 +4,23 @@ import { PaginationControls } from './PaginationControls';
 import { Button } from '@/components/ui';
 import Link from 'next/link';
 
-async function fetchAllRestaurants(page: number, search: string) {
+async function fetchAllRestaurants(page: number, search: string, tags?: string, rating?: string, openNow?: string, sortBy?: string) {
   const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
   try {
     const url = new URL(`${API_URL}/restaurants`);
     url.searchParams.append('page', page.toString());
     url.searchParams.append('limit', '20');
-    url.searchParams.append('sortBy', 'diemTrungBinh');
+    url.searchParams.append('sortBy', sortBy || 'diemTrungBinh');
     url.searchParams.append('order', 'desc');
-    if (search) {
-      url.searchParams.append('search', search);
-    }
+    if (search) url.searchParams.append('search', search);
+    if (tags) url.searchParams.append('tags', tags);
+    if (rating) url.searchParams.append('rating', rating);
+    if (openNow) url.searchParams.append('openNow', openNow);
 
     const res = await fetch(url.toString(), {
-      cache: "no-store", // Render per request
+      cache: "no-store", 
     });
-    
+
     if (!res.ok) throw new Error('Failed to fetch');
     const data = await res.json();
     return {
@@ -32,8 +33,8 @@ async function fetchAllRestaurants(page: number, search: string) {
   }
 }
 
-export const AllRestaurantsSSR = async ({ page, search }: { page: number, search: string }) => {
-  const { restaurants, pagination } = await fetchAllRestaurants(page, search);
+export const AllRestaurantsSSR = async ({ page, search, tags, rating, openNow, sortBy }: { page: number, search: string, tags?: string, rating?: string, openNow?: string, sortBy?: string }) => {
+  const { restaurants, pagination } = await fetchAllRestaurants(page, search, tags, rating, openNow, sortBy);
 
   if (!restaurants || restaurants.length === 0) {
     return (

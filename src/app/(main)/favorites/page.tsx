@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 
 import { Button } from '@/components/ui';
+import { RestaurantCard } from '@/components/features/restaurant/RestaurantCard';
 import { useGetFavorites, useToggleFavorite } from '@/hooks/queries/useFavorite';
 import { useAuthStore } from '@/stores/useAuthStore';
 
@@ -24,11 +25,7 @@ export default function FavoritesPage() {
 
   const favoriteRestaurants = (favoritesData as any)?.data || favoritesData || [];
 
-  const handleToggle = (e: React.MouseEvent, restaurantId: string) => {
-    e.preventDefault();
-    e.stopPropagation();
-    toggleMutation.mutate(restaurantId);
-  };
+
 
   if (isLoading) {
     return (
@@ -66,33 +63,7 @@ export default function FavoritesPage() {
         ) : favoriteRestaurants.length > 0 ? (
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {favoriteRestaurants.map((restaurant: any) => (
-              <Link key={restaurant.id} href={`/restaurant/${restaurant.id}`} className="group block">
-                <div className="overflow-hidden rounded-2xl border border-primary-200 bg-white shadow-sm transition-all hover:-translate-y-1 hover:shadow-lg hover:border-primary-400 dark:border-primary-900/50 dark:bg-slate-900">
-                  <div className="relative aspect-[4/3] overflow-hidden bg-slate-100">
-                    <Image
-                      src={restaurant.cover_image || 'https://images.unsplash.com/photo-1555126634-323283e090fa?w=600&q=80'}
-                      alt={restaurant.name}
-                      fill
-                      className="object-cover transition-transform duration-500 group-hover:scale-110"
-                    />
-                    {/* Trái tim yêu thích đã lưu */}
-                    <button 
-                      onClick={(e) => handleToggle(e, restaurant.id)}
-                      className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-full bg-white/90 backdrop-blur-sm shadow-sm transition-transform hover:scale-110"
-                    >
-                      <Heart className="h-4 w-4 text-red-500 fill-red-500" />
-                    </button>
-                  </div>
-                  <div className="p-4">
-                    <h3 className="font-heading text-lg font-bold text-slate-900 dark:text-white line-clamp-1">
-                      {restaurant.name}
-                    </h3>
-                    <p className="mt-1 text-sm text-slate-500 line-clamp-1">
-                      {restaurant.address}
-                    </p>
-                  </div>
-                </div>
-              </Link>
+              <RestaurantCard key={restaurant.id} restaurant={restaurant} />
             ))}
           </div>
         ) : (

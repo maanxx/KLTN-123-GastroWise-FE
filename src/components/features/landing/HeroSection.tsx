@@ -1,11 +1,16 @@
+'use client';
+
 import { ArrowRight, MapPin, Sparkles } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 
 import { Button } from '@/components/ui';
 import { ROUTES } from '@/lib/constants';
+import { useTranslation } from '@/hooks/useTranslation';
 
 export function HeroSection() {
+  const { t } = useTranslation();
+
   return (
     <section className="relative overflow-hidden pt-24 md:pt-32 lg:pt-40">
       {/* Background decoration */}
@@ -14,29 +19,29 @@ export function HeroSection() {
       <div className="container-app relative">
         <div className="mx-auto max-w-4xl text-center">
           <div className="mb-8 inline-flex animate-fade-in items-center rounded-full border border-primary-200 bg-primary-50 px-3 py-1 text-sm font-medium text-primary-600 dark:border-primary-900 dark:bg-primary-900/30 dark:text-primary-300">
-            <Sparkles className="mr-2 h-4 w-4" /> Hệ thống gợi ý ẩm thực thông minh số 1 TP.HCM
+            <Sparkles className="mr-2 h-4 w-4" /> {t('home.hero_badge')}
           </div>
           
           <h1 className="animate-slide-up font-heading text-4xl font-extrabold tracking-tight text-slate-900 sm:text-5xl md:text-6xl dark:text-white">
-            Khám phá ẩm thực Sài Gòn <br className="hidden sm:block" />
+            {t('home.hero_title_1')} <br className="hidden sm:block" />
             <span className="bg-gradient-to-r from-primary-500 to-secondary-500 bg-clip-text text-transparent">
-              thông minh & tối ưu
+              {t('home.hero_title_2')}
             </span>
           </h1>
           
           <p className="mx-auto mt-6 max-w-2xl animate-slide-up text-lg text-slate-600 sm:text-xl dark:text-slate-400" style={{ animationDelay: '100ms' }}>
-            Không còn phải đau đầu suy nghĩ &quot;Hôm nay ăn gì?&quot;. Hãy để AI của chúng tôi thiết kế lộ trình ăn uống hoàn hảo dựa trên sở thích, ngân sách và thời gian của bạn.
+            {t('home.hero_desc')}
           </p>
           
           <div className="mt-10 flex animate-slide-up flex-col items-center justify-center gap-4 sm:flex-row" style={{ animationDelay: '200ms' }}>
             <Link href={ROUTES.PREFERENCES}>
               <Button size="lg" className="w-full sm:w-auto">
-                Tạo lộ trình ngay
+                {t('navbar.create_itinerary')}
               </Button>
             </Link>
             <Link href="#features">
               <Button variant="outline" size="lg" className="w-full sm:w-auto">
-                Tìm hiểu thêm
+                {t('home.hero_btn_explore')}
               </Button>
             </Link>
           </div>

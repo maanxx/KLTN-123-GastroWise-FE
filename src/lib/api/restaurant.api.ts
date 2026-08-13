@@ -52,7 +52,7 @@ export const restaurantApi = {
 
   getRestaurantMenu: async (id: string): Promise<any[]> => {
     try {
-      const res = await api.get(`/menus/restaurant/${id}`);
+      const res = await api.get(`/restaurants/${id}/menu`);
       return res.data;
     } catch {
       return []; // Return empty if menu endpoint not ready

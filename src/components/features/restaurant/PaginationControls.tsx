@@ -1,8 +1,9 @@
 'use client';
 
 import React from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import { Button } from '@/components/ui';
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface PaginationControlsProps {
   totalPages: number;
@@ -11,6 +12,8 @@ interface PaginationControlsProps {
 export const PaginationControls: React.FC<PaginationControlsProps> = ({ totalPages }) => {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const { t } = useTranslation();
   const currentPage = Number(searchParams.get('page')) || 1;
 
   if (totalPages <= 1) return null;
@@ -18,7 +21,7 @@ export const PaginationControls: React.FC<PaginationControlsProps> = ({ totalPag
   const setPage = (pageNum: number) => {
     const params = new URLSearchParams(searchParams.toString());
     params.set('page', pageNum.toString());
-    router.push(`/?${params.toString()}`, { scroll: false });
+    router.push(`${pathname}?${params.toString()}`, { scroll: false });
   };
 
   const getPageNumbers = () => {
@@ -42,7 +45,7 @@ export const PaginationControls: React.FC<PaginationControlsProps> = ({ totalPag
         disabled={currentPage === 1}
         className="mr-2"
       >
-        Trước
+        {t('pagination.prev')}
       </Button>
       
       {getPageNumbers().map((pageNum, idx) => {
@@ -67,7 +70,7 @@ export const PaginationControls: React.FC<PaginationControlsProps> = ({ totalPag
         disabled={currentPage === totalPages}
         className="ml-2"
       >
-        Sau
+        {t('pagination.next')}
       </Button>
     </div>
   );

@@ -9,7 +9,6 @@ import {
   RestaurantInfo,
   RestaurantMenu,
   RestaurantReviews,
-  RestaurantVouchers,
 } from '@/components/features/restaurant';
 import { useGetRestaurantById, useGetRestaurantMenu } from '@/hooks/queries/useRestaurants';
 import { useGetReviews } from '@/hooks/queries/useReviews';
@@ -35,9 +34,11 @@ export default function RestaurantDetailPage({ params }: { params: { id: string 
     );
   }
 
-  if (isError || !apiRestaurant || !apiRestaurant.id) {
+  if (isError || !apiRestaurant || (!apiRestaurant.id && !apiRestaurant._id)) {
     notFound();
   }
+
+  const [openTime, closeTime] = apiRestaurant.openingTime ? apiRestaurant.openingTime.split(' - ') : ['08:00', '22:00'];
 
   const restaurant: any = {
     id: apiRestaurant._id || apiRestaurant.id,
@@ -50,6 +51,11 @@ export default function RestaurantDetailPage({ params }: { params: { id: string 
     cuisineTypes: apiRestaurant.tags ? apiRestaurant.tags.split(',') : ['Nhà hàng'],
     description: apiRestaurant.description || '',
     phone: apiRestaurant.contactPhone || 'Đang cập nhật',
+    shopeeUrl: apiRestaurant.urlGoc 
+      ? (apiRestaurant.urlGoc.startsWith('http') ? apiRestaurant.urlGoc : `https://shopeefood.vn${apiRestaurant.urlGoc.startsWith('/') ? '' : '/'}${apiRestaurant.urlGoc}`) 
+      : null,
+    openTime: openTime,
+    closeTime: closeTime,
     menu: menu.length > 0 ? menu.map((item: any) => ({
       id: item._id || item.id,
       name: item.name,
@@ -59,11 +65,11 @@ export default function RestaurantDetailPage({ params }: { params: { id: string 
     })) : [],
     reviews: reviews.length > 0 ? reviews.map((rev: any) => ({
       id: rev._id || rev.id,
-      author: rev.userId?.username || rev.full_name || 'Khách hàng',
-      userAvatar: rev.userId?.picture || rev.avatar_url || `https://ui-avatars.com/api/?name=${rev.full_name || 'U'}`,
-      rating: Number(rev.diemReview || rev.rating || 5),
+      author: rev.userName || rev.userId?.username || rev.full_name || 'Khách hàng',
+      userAvatar: rev.userId?.picture || rev.avatar_url || `https://ui-avatars.com/api/?name=${rev.userName || rev.full_name || 'U'}`,
+      rating: Number(rev.rating || rev.diemReview || 5),
       date: new Date(rev.createdAt || rev.created_at || Date.now()).toLocaleDateString('vi-VN'),
-      content: rev.noiDung || rev.comment,
+      content: rev.comment || rev.noiDung,
     })) : [],
   };
 
@@ -85,7 +91,6 @@ export default function RestaurantDetailPage({ params }: { params: { id: string 
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
           {/* Main Content (Trái 2 phần) */}
           <div className="lg:col-span-2">
-            <RestaurantVouchers />
             <RestaurantMenu menu={restaurant.menu} />
             <RestaurantReviews reviews={restaurant.reviews} />
           </div>
