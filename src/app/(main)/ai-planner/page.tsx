@@ -5,8 +5,10 @@ import { Bot, Search, Sparkles, Send } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useGenerateItinerary } from '@/hooks/queries/useItinerary';
 import { useAuthStore } from '@/stores/useAuthStore';
+import { useTranslation } from '@/hooks/useTranslation';
 
 export default function AiPlannerPage() {
+  const { t } = useTranslation();
   const [prompt, setPrompt] = useState('');
   const [hasSearched, setHasSearched] = useState(false);
   const router = useRouter();
@@ -19,7 +21,7 @@ export default function AiPlannerPage() {
     if (!prompt.trim()) return;
     
     if (!isAuthenticated) {
-      alert("Vui lòng đăng nhập để tạo lộ trình!");
+      alert(t('alert.login_required'));
       router.push('/login');
       return;
     }
@@ -44,12 +46,12 @@ export default function AiPlannerPage() {
         if (itineraryId) {
           router.push(`/itinerary/${itineraryId}`);
         } else {
-          alert('Không tạo được lộ trình, vui lòng thử lại!');
+          alert(t('alert.itinerary_create_error'));
           setHasSearched(false);
         }
       },
       onError: () => {
-        alert('Lỗi khi kết nối với máy chủ AI (Backend). Vui lòng thử lại sau!');
+        alert(t('alert.ai_server_error'));
         setHasSearched(false);
       }
     });

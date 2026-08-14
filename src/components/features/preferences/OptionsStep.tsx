@@ -8,8 +8,10 @@ import { DIETARY_OPTIONS } from '@/lib/constants';
 import { usePreferenceStore } from '@/stores/usePreferenceStore';
 import { useGenerateItinerary } from '@/hooks/queries/useItinerary';
 import { useAuthStore } from '@/stores/useAuthStore';
+import { useTranslation } from '@/hooks/useTranslation';
 
 export function OptionsStep() {
+  const { t } = useTranslation();
   const router = useRouter();
   const { isAuthenticated } = useAuthStore();
   const { data, updateData, prevStep } = usePreferenceStore();
@@ -27,7 +29,7 @@ export function OptionsStep() {
 
   const handleSubmit = () => {
     if (!isAuthenticated) {
-      alert("Vui lòng đăng nhập để tạo lộ trình!");
+      alert(t('alert.login_required'));
       router.push('/login');
       return;
     }
@@ -47,11 +49,11 @@ export function OptionsStep() {
         if (itineraryId) {
           router.push(`/itinerary/${itineraryId}`);
         } else {
-          alert('Không tạo được lộ trình, vui lòng thử lại!');
+          alert(t('alert.itinerary_create_error'));
         }
       },
       onError: () => {
-        alert('Lỗi khi kết nối với máy chủ AI. Vui lòng thử lại sau!');
+        alert(t('alert.ai_server_error'));
       }
     });
   };

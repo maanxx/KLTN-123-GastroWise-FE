@@ -2,6 +2,7 @@ import React from 'react';
 import { ExploreControls } from '@/components/features/restaurant/ExploreControls';
 import { CollectionsSlider } from '@/components/features/restaurant/CollectionsSlider';
 import { AllRestaurantsSSR } from '@/components/features/restaurant/AllRestaurantsSSR';
+import { Translate } from '@/components/ui/Translate';
 
 import { redirect } from 'next/navigation';
 
@@ -20,7 +21,7 @@ export default function ExplorePage({ searchParams }: { searchParams: { page?: s
     <div className="flex flex-col pt-24 min-h-screen bg-gray-50">
       <section className="bg-white py-10 shadow-sm mb-8">
         <div className="container-app">
-          <React.Suspense fallback={<div>Loading filters...</div>}>
+          <React.Suspense fallback={<div><Translate translationKey="explore.loading_filters" /></div>}>
             <ExploreControls />
             <CollectionsSlider />
           </React.Suspense>
@@ -28,8 +29,8 @@ export default function ExplorePage({ searchParams }: { searchParams: { page?: s
       </section>
 
       <section className="container-app pb-20">
-        <h2 className="text-2xl font-bold text-gray-900 mb-6">Kết quả tìm kiếm</h2>
-        <React.Suspense fallback={<div>Đang tải danh sách quán ăn...</div>}>
+        <h2 className="text-2xl font-bold text-gray-900 mb-6"><Translate translationKey="explore.search_results" /></h2>
+        <React.Suspense fallback={<div><Translate translationKey="explore.loading_restaurants" /></div>}>
           <AllRestaurantsSSR page={page} search={search} tags={tags} rating={rating} openNow={openNow} sortBy={sortBy} />
         </React.Suspense>
       </section>

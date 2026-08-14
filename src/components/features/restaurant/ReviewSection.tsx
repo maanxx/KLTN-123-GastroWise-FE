@@ -3,7 +3,8 @@
 import React, { useState } from 'react';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { useGetReviews, useCreateReview } from '@/hooks/queries/useReviews';
-import { Button, Input } from '@/components/ui';
+import { Button } from '@/components/ui';
+import { useTranslation } from '@/hooks/useTranslation';
 import { Star, Loader2, User as UserIcon } from 'lucide-react';
 import Link from 'next/link';
 
@@ -12,6 +13,7 @@ interface ReviewSectionProps {
 }
 
 export const ReviewSection: React.FC<ReviewSectionProps> = ({ restaurantId }) => {
+  const { t } = useTranslation();
   const { user, isAuthenticated } = useAuthStore();
   const { data: reviews, isLoading } = useGetReviews(restaurantId);
   const createReviewMutation = useCreateReview(restaurantId);
@@ -29,10 +31,10 @@ export const ReviewSection: React.FC<ReviewSectionProps> = ({ restaurantId }) =>
         onSuccess: () => {
           setComment('');
           setRating(5);
-          alert('Đã gửi đánh giá thành công!');
+          alert(t('alert.review_success'));
         },
         onError: (err: any) => {
-          alert(err.message || 'Lỗi khi gửi đánh giá');
+          alert(t('alert.review_error'));
         },
       }
     );
