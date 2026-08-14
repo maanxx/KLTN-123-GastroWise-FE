@@ -8,7 +8,10 @@ import { Input, Button } from '@/components/ui';
 import { Search, Loader2, Camera, Upload } from 'lucide-react';
 import { restaurantApi } from '@/lib/api/restaurant.api';
 
+import { useTranslation } from '@/hooks/useTranslation';
+
 export const RestaurantList = () => {
+  const { t } = useTranslation();
   const [searchTerm, setSearchTerm] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
   const [page, setPage] = useState(1);
@@ -47,7 +50,7 @@ export const RestaurantList = () => {
         setImageResults(result.data);
       }
     } catch (error) {
-      alert("Lỗi khi tìm kiếm bằng hình ảnh!");
+      alert(t('alert.search_image_error'));
     } finally {
       setIsSearchingImage(false);
       if (fileInputRef.current) fileInputRef.current.value = '';

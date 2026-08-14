@@ -5,8 +5,10 @@ import Image from 'next/image';
 import { Camera, ArrowRight, Play, Utensils, Star, Heart } from 'lucide-react';
 import { Button } from '@/components/ui';
 import { motion } from 'framer-motion';
+import { useTranslation } from '@/hooks/useTranslation';
 
 export default function AboutPage() {
+  const { t } = useTranslation();
   const fadeInUp = {
     hidden: { opacity: 0, y: 40 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } }
@@ -54,17 +56,17 @@ export default function AboutPage() {
             transition={{ duration: 0.8 }}
           >
             <h1 className="font-heading text-5xl md:text-7xl font-bold text-white mb-6 tracking-tight">
-              Tinh hoa <span className="text-primary-400">Ẩm thực Việt</span>
+              {t('about.hero_title_1')} <span className="text-primary-400">{t('about.hero_title_2')}</span>
             </h1>
             <p className="text-lg md:text-xl text-slate-200 max-w-3xl mx-auto mb-10 leading-relaxed font-light">
-              Kết nối đam mê, chia sẻ hương vị. Khám phá câu chuyện đằng sau mỗi món ăn cùng GastroWise.
+              {t('about.hero_desc')}
             </p>
             <Button
               size="lg"
               className="rounded-full px-8 text-base shadow-lg shadow-primary-500/30 group"
               onClick={() => scrollToSection('story-section')}
             >
-              KHÁM PHÁ CÂU CHUYỆN CỦA CHÚNG TÔI
+              {t('about.hero_btn')}
               <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
             </Button>
           </motion.div>
@@ -104,17 +106,15 @@ export default function AboutPage() {
             >
               <div className="flex items-center gap-4 mb-6">
                 <div className="h-px w-12 bg-primary-500"></div>
-                <span className="text-primary-600 font-bold uppercase tracking-widest text-sm">Khám phá</span>
+                <span className="text-primary-600 font-bold uppercase tracking-widest text-sm">{t('about.story_tag')}</span>
               </div>
-              <h2 className="font-heading text-4xl md:text-5xl font-bold text-slate-900 mb-8">Câu chuyện</h2>
+              <h2 className="font-heading text-4xl md:text-5xl font-bold text-slate-900 mb-8">{t('about.story_title')}</h2>
               <div className="space-y-6 text-slate-600 leading-relaxed text-lg">
                 <p>
-                  Trong một thế giới mà mọi thứ đều được số hóa, việc cùng nhau chia sẻ một bữa ăn là một trong những sợi dây kết nối thực tế cuối cùng còn sót lại.
-                  Đó là nơi những hợp đồng được ký kết, tình bạn được thắt chặt và những chuyện tình bắt đầu.
+                  {t('about.story_p1')}
                 </p>
                 <p>
-                  Tại GastroWise, sứ mệnh của chúng tôi rất đơn giản: đảm bảo mọi cuộc gặp gỡ đều đi kèm với những món ăn tuyệt vời.
-                  Chúng tôi không chỉ gợi ý nhà hàng, chúng tôi gợi ý những kỷ niệm. Hãy để chúng tôi lo phần thực đơn, để bạn toàn tâm toàn ý dành thời gian cho những người ngồi đối diện.
+                  {t('about.story_p2')}
                 </p>
               </div>
               <Button
@@ -122,7 +122,7 @@ export default function AboutPage() {
                 className="mt-10 rounded-full border-2 border-slate-200 text-slate-700 hover:border-primary-500 hover:bg-primary-50 hover:text-primary-700"
                 onClick={() => scrollToSection('team-section')}
               >
-                XEM CHI TIẾT
+                {t('about.story_btn')}
               </Button>
             </motion.div>
           </div>
@@ -141,10 +141,10 @@ export default function AboutPage() {
           >
             <div className="flex items-center justify-center gap-4 mb-4">
               <div className="h-px w-8 bg-primary-500"></div>
-              <span className="text-primary-600 font-bold uppercase tracking-widest text-sm">Gặp gỡ đội ngũ</span>
+              <span className="text-primary-600 font-bold uppercase tracking-widest text-sm">{t('about.team_tag')}</span>
               <div className="h-px w-8 bg-primary-500"></div>
             </div>
-            <h2 className="font-heading text-4xl font-bold text-slate-900">Những người đứng sau GastroWise</h2>
+            <h2 className="font-heading text-4xl font-bold text-slate-900">{t('about.team_title')}</h2>
           </motion.div>
 
           <div className="space-y-32">
@@ -170,14 +170,13 @@ export default function AboutPage() {
                 transition={{ duration: 0.7 }}
                 className="lg:pr-8"
               >
-                <h3 className="font-heading text-5xl font-bold text-slate-900 mb-4">Thiên Thiên</h3>
-                <p className="text-xl text-primary-600 font-medium mb-6">Trưởng nhóm Backend & AI</p>
+                <h3 className="font-heading text-5xl font-bold text-slate-900 mb-4">{t('about.team_member_1_name')}</h3>
+                <p className="text-xl text-primary-600 font-medium mb-6">{t('about.team_member_1_role')}</p>
                 <p className="text-slate-600 text-lg leading-relaxed mb-8">
-                  Người đứng đằng sau toàn bộ hệ thống máy chủ và các thuật toán AI thông minh.
-                  Sở trường: Biến những dữ liệu phức tạp thành các gợi ý món ăn hoàn hảo và giữ cho server luôn vững chắc như bàn thạch.
+                  {t('about.team_member_1_desc')}
                 </p>
                 <div className="p-4 bg-primary-50 border-l-4 border-primary-500 text-primary-800 italic rounded-r-lg">
-                  Món tủ: Matcha Latte – Nguồn năng lượng để code xuyên màn đêm.
+                  {t('about.team_member_1_fav')}
                 </div>
               </motion.div>
             </div>
@@ -191,14 +190,13 @@ export default function AboutPage() {
                 transition={{ duration: 0.7 }}
                 className="order-2 lg:order-1 lg:pl-8"
               >
-                <h3 className="font-heading text-5xl font-bold text-slate-900 mb-4">Minh Mẫn</h3>
-                <p className="text-xl text-primary-600 font-medium mb-6">Fullstack Admin & Frontend User</p>
+                <h3 className="font-heading text-5xl font-bold text-slate-900 mb-4">{t('about.team_member_2_name')}</h3>
+                <p className="text-xl text-primary-600 font-medium mb-6">{t('about.team_member_2_role')}</p>
                 <p className="text-slate-600 text-lg leading-relaxed mb-8">
-                  Kiến trúc sư xây dựng toàn bộ hệ thống quản trị và giao diện người dùng mượt mà.
-                  Đam mê thiết kế các trải nghiệm trực quan, đảm bảo người dùng luôn có trải nghiệm tuyệt vời nhất khi tương tác.
+                  {t('about.team_member_2_desc')}
                 </p>
                 <div className="p-4 bg-primary-50 border-l-4 border-primary-500 text-primary-800 italic rounded-r-lg">
-                  Món tủ: Cà phê đen đá – Bí quyết để giữ server luôn 'sống' 24/7.
+                  {t('about.team_member_2_fav')}
                 </div>
               </motion.div>
 
@@ -231,12 +229,12 @@ export default function AboutPage() {
           >
             <div className="flex items-center justify-center gap-4 mb-4">
               <div className="h-px w-8 bg-primary-500"></div>
-              <span className="text-primary-600 font-bold uppercase tracking-widest text-sm">Tuyệt tác</span>
+              <span className="text-primary-600 font-bold uppercase tracking-widest text-sm">{t('about.features_tag')}</span>
               <div className="h-px w-8 bg-primary-500"></div>
             </div>
-            <h2 className="font-heading text-4xl font-bold text-slate-900 mb-6">Tinh hoa Ẩm thực</h2>
+            <h2 className="font-heading text-4xl font-bold text-slate-900 mb-6">{t('about.features_title')}</h2>
             <p className="text-slate-600 max-w-2xl mx-auto text-lg">
-              Ẩm thực Việt Nam là một sự quyến rũ kì diệu không chỉ với những người sinh ra ở mảnh đất hình chữ S, mà còn với cả du khách quốc tế. Những tinh hoa và di sản đó không ngừng vươn xa bởi sự nhiệt huyết của chúng ta.
+              {t('about.features_desc')}
             </p>
           </motion.div>
 
@@ -248,9 +246,9 @@ export default function AboutPage() {
             className="grid md:grid-cols-3 gap-8 lg:gap-12"
           >
             {[
-              { img: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80', title: 'Hương vị truyền thống' },
-              { img: 'https://images.unsplash.com/photo-1564834724105-918b73d1b9e0?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80', title: 'Nguyên liệu tươi sạch' },
-              { img: 'https://images.unsplash.com/photo-1511920170033-f8396924c348?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80', title: 'Cà phê & Đồ uống' }
+              { img: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80', title: t('about.feature_1') },
+              { img: 'https://images.unsplash.com/photo-1564834724105-918b73d1b9e0?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80', title: t('about.feature_2') },
+              { img: 'https://images.unsplash.com/photo-1511920170033-f8396924c348?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80', title: t('about.feature_3') }
             ].map((item, i) => (
               <motion.div key={i} variants={fadeInUp} className="group cursor-pointer">
                 <div className="relative aspect-square rounded-full overflow-hidden mb-6 shadow-xl ring-8 ring-primary-50 group-hover:ring-primary-100 transition-all duration-300">

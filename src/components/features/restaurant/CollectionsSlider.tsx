@@ -4,16 +4,18 @@ import React from 'react';
 import Image from 'next/image';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { TrendingUp } from 'lucide-react';
+import { useTranslation } from '@/hooks/useTranslation';
 
 export const CollectionsSlider = () => {
+  const { t } = useTranslation();
   const router = useRouter();
   const searchParams = useSearchParams();
 
   const collections = [
-    { title: 'Quán chay thanh tịnh', bg: 'from-emerald-400 to-teal-600', img: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=600&q=80', tags: 'ĐỒ CHAY' },
-    { title: 'Trà sữa & Giải khát', bg: 'from-pink-400 to-rose-500', img: 'https://tse3.mm.bing.net/th/id/OIP.vpwv-37gD3dvEgNMfe32rQAAAA?r=0&rs=1&pid=ImgDetMain&o=7&rm=3', tags: 'ĐỒ UỐNG,TRÁNG MIỆNG' },
-    { title: 'Lẩu cuối tuần', bg: 'from-orange-400 to-red-500', img: 'https://cdn3.ivivu.com/2022/09/l%E1%BA%A9u-n%C6%B0%E1%BB%9Bng-ivivu.jpg', tags: 'MÓN LẨU' },
-    { title: 'Thiên đường Ăn vặt', bg: 'from-yellow-400 to-orange-500', img: 'https://bloganchoi.com/wp-content/uploads/2022/11/tong-hop-10-mon-an-vat.jpg', tags: 'ĐỒ ĂN' },
+    { title: t('collection.vegan'), bg: 'from-emerald-400 to-teal-600', img: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=600&q=80', tags: 'ĐỒ CHAY' },
+    { title: t('collection.milk_tea'), bg: 'from-pink-400 to-rose-500', img: 'https://tse3.mm.bing.net/th/id/OIP.vpwv-37gD3dvEgNMfe32rQAAAA?r=0&rs=1&pid=ImgDetMain&o=7&rm=3', tags: 'ĐỒ UỐNG,TRÁNG MIỆNG' },
+    { title: t('collection.hotpot'), bg: 'from-orange-400 to-red-500', img: 'https://cdn3.ivivu.com/2022/09/l%E1%BA%A9u-n%C6%B0%E1%BB%9Bng-ivivu.jpg', tags: 'MÓN LẨU' },
+    { title: t('collection.snacks'), bg: 'from-yellow-400 to-orange-500', img: 'https://bloganchoi.com/wp-content/uploads/2022/11/tong-hop-10-mon-an-vat.jpg', tags: 'ĐỒ ĂN' },
   ];
 
   const handleCollectionClick = (tags: string) => {
@@ -29,9 +31,9 @@ export const CollectionsSlider = () => {
       <div className="mb-4 flex items-center justify-between">
         <h2 className="flex items-center gap-2 font-heading text-xl font-bold text-slate-900 dark:text-white">
           <TrendingUp className="h-5 w-5 text-accent-500" />
-          Bộ sưu tập Nổi bật
+          {t('explore.featured_collections')}
         </h2>
-        <button className="text-sm font-semibold text-primary-600 hover:text-primary-700">Xem tất cả</button>
+        <button className="text-sm font-semibold text-primary-600 hover:text-primary-700">{t('explore.view_all')}</button>
       </div>
       <div className="flex snap-x snap-mandatory gap-4 overflow-x-auto pb-4 scrollbar-hide">
         {collections.map((collection, idx) => (

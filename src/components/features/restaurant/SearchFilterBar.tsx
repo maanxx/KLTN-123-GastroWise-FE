@@ -3,11 +3,12 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Input, Button } from '@/components/ui';
-import { Search, Loader2, Camera } from 'lucide-react';
+import { Search, Loader2, Camera, X } from 'lucide-react';
 import { restaurantApi } from '@/lib/api/restaurant.api';
 import { RestaurantCard } from './RestaurantCard';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { useTranslation } from '@/hooks/useTranslation';
+import { toast } from 'sonner';
 
 interface SearchFilterBarProps {
   children: React.ReactNode;
@@ -64,7 +65,7 @@ export const SearchFilterBar: React.FC<SearchFilterBarProps> = ({ children }) =>
         setImageResults(result.data);
       }
     } catch (error) {
-      alert("Lỗi khi tìm kiếm bằng hình ảnh!");
+      alert(t('alert.search_image_error'));
     } finally {
       setIsSearchingImage(false);
       if (fileInputRef.current) fileInputRef.current.value = '';
