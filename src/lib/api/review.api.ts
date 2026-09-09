@@ -1,18 +1,28 @@
 import { axiosClient } from './axiosClient';
 
 export interface Review {
-  id: string;
-  rating: number;
-  comment: string;
-  created_at: string;
-  full_name: string;
+  id?: string;
+  _id?: string;
+  rating?: number;
+  diemReview?: number;
+  comment?: string;
+  noiDung?: string;
+  createdAt?: string;
+  created_at?: string;
+  full_name?: string;
+  userName?: string;
+  author?: string;
   avatar_url?: string;
+  aiSentimentLabel?: string;
+  aiSentimentScore?: number;
 }
 
 export interface CreateReviewPayload {
-  restaurant_id: string;
-  rating: number;
-  comment: string;
+  restaurantId: string;
+  diemReview: number;
+  noiDung: string;
+  userName?: string;
+  images?: string[];
 }
 
 export const reviewApi = {

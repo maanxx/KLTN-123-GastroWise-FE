@@ -4,11 +4,16 @@
 export interface User {
   id: string;
   email: string;
-  fullName: string;
+  fullName?: string;
+  full_name?: string;
+  firstName?: string;
+  lastName?: string;
+  username?: string;
   avatar?: string;
+  picture?: string;
   phone?: string;
-  createdAt: string;
-  updatedAt: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 /**

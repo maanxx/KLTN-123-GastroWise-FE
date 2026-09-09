@@ -1,6 +1,6 @@
 import React from 'react';
-import { RestaurantCard } from './RestaurantCard';
 import { SectionTitle } from './SectionTitle';
+import { PersonalizedSwiperSlider } from './PersonalizedSwiperSlider';
 
 async function fetchPersonalizedRestaurants() {
   const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
@@ -35,18 +35,7 @@ export const PersonalizedRecommendationsSSR = async () => {
           subtitle="Dựa trên các món ngon bạn có thể sẽ thích"
         />
         
-        <div className="relative -mx-4 px-4 sm:mx-0 sm:px-0">
-          <div className="flex overflow-x-auto gap-6 pb-6 snap-x snap-mandatory scroll-smooth [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-            {restaurants.map((restaurant: any) => (
-              <div 
-                key={restaurant.id || restaurant._id} 
-                className="snap-start snap-always shrink-0 w-[280px] sm:w-[320px] md:w-[350px]"
-              >
-                <RestaurantCard restaurant={restaurant} />
-              </div>
-            ))}
-          </div>
-        </div>
+        <PersonalizedSwiperSlider restaurants={restaurants} />
       </div>
     </section>
   );

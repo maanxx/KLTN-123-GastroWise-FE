@@ -36,6 +36,7 @@ export function OptionsStep() {
 
     const payload = {
       title: data.notes ? data.notes.substring(0, 50) : 'Lộ trình từ Preferences',
+      prompt: data.notes || 'Lộ trình từ Preferences',
       start_time: new Date().toISOString(),
       end_time: new Date(Date.now() + 4 * 60 * 60 * 1000).toISOString(),
       budget: data.maxBudget || 500000,

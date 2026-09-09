@@ -92,7 +92,11 @@ export default function RestaurantDetailPage({ params }: { params: { id: string 
           {/* Main Content (Trái 2 phần) */}
           <div className="lg:col-span-2">
             <RestaurantMenu menu={restaurant.menu} />
-            <RestaurantReviews reviews={restaurant.reviews} />
+            <RestaurantReviews 
+              reviews={restaurant.reviews} 
+              restaurantId={params.id}
+              restaurantName={restaurant.name}
+            />
           </div>
 
           {/* Sidebar Info (Phải 1 phần) */}

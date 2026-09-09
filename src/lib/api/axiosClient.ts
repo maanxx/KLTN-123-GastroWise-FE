@@ -28,6 +28,17 @@ axiosClient.interceptors.response.use(
     return response.data;
   },
   async (error) => {
+    if (error.response?.status === 403) {
+      const msg = error.response?.data?.message || '';
+      if (msg.toLowerCase().includes('khóa') || msg.toLowerCase().includes('banned')) {
+        if (typeof window !== "undefined") {
+          localStorage.removeItem('token');
+          localStorage.removeItem('user');
+          alert(msg || 'Tài khoản của bạn đã bị khóa bởi Quản trị viên do vi phạm điều khoản.');
+          window.location.href = "/login";
+        }
+      }
+    }
     if (error.response?.status === 401) {
       if (typeof window !== "undefined") {
         localStorage.removeItem('token');

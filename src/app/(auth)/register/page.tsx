@@ -10,7 +10,6 @@ import { ROUTES } from '@/lib/constants';
 import { registerSchema, type RegisterFormData } from '@/lib/validation/auth.schema';
 import { useRegisterMutation } from '@/hooks/queries/useAuth';
 import { useAuthStore } from '@/stores/useAuthStore';
-import { AuthIllustration } from '@/components/features/auth/AuthIllustration';
 import { useTranslation } from '@/hooks/useTranslation';
 
 export default function RegisterPage() {

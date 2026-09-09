@@ -47,7 +47,18 @@ apiClient.interceptors.response.use(
       throw new AppError(0, ERROR_MESSAGES.NETWORK, 'NETWORK_ERROR');
     }
 
-    const { status, data } = error.response;
+    if (status === 403) {
+      const msg = data?.message || '';
+      if (msg.toLowerCase().includes('khóa') || msg.toLowerCase().includes('banned')) {
+        removeStorageItem(APP_CONFIG.ACCESS_TOKEN_KEY);
+        removeStorageItem(APP_CONFIG.REFRESH_TOKEN_KEY);
+        removeStorageItem(APP_CONFIG.USER_KEY);
+        if (typeof window !== 'undefined') {
+          alert(msg || 'Tài khoản của bạn đã bị khóa bởi Quản trị viên do vi phạm điều khoản.');
+          window.location.href = '/login';
+        }
+      }
+    }
 
     // Token hết hạn → xoá token, redirect login
     if (status === 401) {
