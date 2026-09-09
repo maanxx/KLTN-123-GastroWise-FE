@@ -20,6 +20,26 @@ export const PersonalizedSwiperSlider: React.FC<PersonalizedSwiperSliderProps> =
 
   return (
     <div className="relative group/slider">
+      {/* Custom Styling for Pagination Position & Active Bullet */}
+      <style jsx global>{`
+        .personalized-slider {
+          padding-bottom: 3.5rem !important;
+        }
+        .personalized-slider .swiper-pagination {
+          bottom: 2px !important;
+        }
+        .personalized-slider .swiper-pagination-bullet {
+          transition: all 0.3s ease;
+          opacity: 0.5;
+        }
+        .personalized-slider .swiper-pagination-bullet-active {
+          opacity: 1;
+          width: 20px !important;
+          border-radius: 9999px !important;
+          background-color: #3b82f6 !important;
+        }
+      `}</style>
+
       {/* Custom Navigation Buttons */}
       <button
         id="swiper-prev-btn"
@@ -69,7 +89,7 @@ export const PersonalizedSwiperSlider: React.FC<PersonalizedSwiperSliderProps> =
             spaceBetween: 24,
           },
         }}
-        className="pb-12 pt-2 !px-1"
+        className="personalized-slider pt-2 !px-1"
       >
         {restaurants.map((restaurant, idx) => (
           <SwiperSlide key={restaurant.id || restaurant._id || idx} className="h-auto">
