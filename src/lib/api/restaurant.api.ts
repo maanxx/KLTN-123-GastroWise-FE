@@ -40,7 +40,10 @@ export const restaurantApi = {
   },
 
   getRestaurantById: async (id: string): Promise<any> => {
-    const res = await api.get(`/restaurants/${id}`);
+    const parts = id.split('-');
+    const lastPart = parts[parts.length - 1];
+    const cleanId = (lastPart && lastPart.length === 24) ? lastPart : id;
+    const res = await api.get(`/restaurants/${cleanId}`);
     return res.data;
   },
 
@@ -52,7 +55,10 @@ export const restaurantApi = {
 
   getRestaurantMenu: async (id: string): Promise<any[]> => {
     try {
-      const res = await api.get(`/restaurants/${id}/menu`);
+      const parts = id.split('-');
+      const lastPart = parts[parts.length - 1];
+      const cleanId = (lastPart && lastPart.length === 24) ? lastPart : id;
+      const res = await api.get(`/restaurants/${cleanId}/menu`);
       return res.data;
     } catch {
       return []; // Return empty if menu endpoint not ready

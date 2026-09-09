@@ -1,12 +1,15 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
-// Sẽ cập nhật theo type thực tế từ BE
+// Cập nhật theo type thực tế từ BE & Google OAuth
 export interface User {
   id: string;
   email: string;
   fullName: string;
+  full_name?: string;
+  username?: string;
   avatar?: string;
+  picture?: string;
   role: string;
 }
 
@@ -27,7 +30,6 @@ export const useAuthStore = create<AuthState>()(
     }),
     {
       name: 'auth-storage', // Tên lưu trong localStorage
-      // Không lưu các trường quá nhạy cảm hoặc token (token lưu ở cookie)
       partialize: (state) => ({ user: state.user, isAuthenticated: state.isAuthenticated }),
     }
   )

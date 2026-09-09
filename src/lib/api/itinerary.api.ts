@@ -1,7 +1,8 @@
 import { axiosClient } from './axiosClient';
 
 export interface GenerateItineraryPayload {
-  prompt: string;
+  prompt?: string;
+  title?: string;
   start_time: string; // ISO String
   end_time: string;   // ISO String
   budget?: number;

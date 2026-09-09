@@ -9,6 +9,7 @@ import { Card } from '@/components/ui';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { useGetFavorites, useToggleFavorite } from '@/hooks/queries/useFavorite';
 import { useTranslation } from '@/hooks/useTranslation';
+import { getRestaurantUrl } from '@/lib/utils/slug';
 import type { Restaurant } from '@/lib/api/restaurant.api';
 
 interface RestaurantCardProps {
@@ -77,7 +78,7 @@ export const RestaurantCard: React.FC<RestaurantCardProps> = ({ restaurant, acti
   const rating = (restaurant as any).diemTrungBinh ? Number((restaurant as any).diemTrungBinh) : restaurant.rating_avg ? (Number(restaurant.rating_avg) / 2) : null;
 
   return (
-    <Link href={`/restaurant/${rId}`} className="block h-full group">
+    <Link href={getRestaurantUrl(restaurant)} className="block h-full group">
       <Card className="overflow-hidden hover:shadow-lg transition-shadow duration-300 cursor-pointer flex flex-col h-full">
         <div className="relative h-48 w-full overflow-hidden">
           <Image

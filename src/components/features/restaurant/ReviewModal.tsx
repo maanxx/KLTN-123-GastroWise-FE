@@ -1,21 +1,52 @@
 'use client';
 
 import { useState } from 'react';
-import { Camera, Star, X } from 'lucide-react';
+import { Camera, Star, X, Loader2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { toast } from 'sonner';
 
 import { Button } from '@/components/ui';
+import { useCreateReview } from '@/hooks/queries/useReviews';
+import { useAuthStore } from '@/stores/useAuthStore';
 
 interface ReviewModalProps {
   isOpen: boolean;
   onClose: () => void;
   restaurantName: string;
+  restaurantId?: string;
 }
 
-export function ReviewModal({ isOpen, onClose, restaurantName }: ReviewModalProps) {
+export function ReviewModal({ isOpen, onClose, restaurantName, restaurantId }: ReviewModalProps) {
   const [rating, setRating] = useState(0);
   const [hoverRating, setHoverRating] = useState(0);
   const [content, setContent] = useState('');
+  
+  const { user } = useAuthStore();
+  const createReviewMutation = useCreateReview(restaurantId || '');
+
+  const handleSubmit = async () => {
+    if (rating === 0 || !content.trim()) return;
+
+    try {
+      const userName = user 
+        ? (user.fullName || `${(user as any).firstName || ''} ${(user as any).lastName || ''}`.trim() || user.username || user.email)
+        : 'Khách hàng';
+
+      await createReviewMutation.mutateAsync({
+        restaurantId: restaurantId || '',
+        diemReview: rating,
+        noiDung: content,
+        userName,
+      });
+
+      toast.success('Gửi đánh giá thành công! AI đang phân tích cảm xúc bài viết.');
+      setRating(0);
+      setContent('');
+      onClose();
+    } catch (err: any) {
+      toast.error('Gửi đánh giá thất bại: ' + (err.response?.data?.message || err.message || 'Lỗi kết nối'));
+    }
+  };
 
   return (
     <AnimatePresence>
@@ -92,7 +123,7 @@ export function ReviewModal({ isOpen, onClose, restaurantName }: ReviewModalProp
 
               {/* Upload Zone */}
               <div className="mb-6">
-                <button className="flex w-full flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-slate-200 bg-slate-50 py-8 transition-colors hover:border-primary-400 hover:bg-primary-50/50 dark:border-slate-800 dark:bg-slate-900/50">
+                <button className="flex w-full flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-slate-200 bg-slate-50 py-6 transition-colors hover:border-primary-400 hover:bg-primary-50/50 dark:border-slate-800 dark:bg-slate-900/50">
                   <div className="rounded-full bg-primary-100 p-3 text-primary-600 dark:bg-primary-900/30 dark:text-primary-400">
                     <Camera className="h-6 w-6" />
                   </div>
@@ -105,8 +136,18 @@ export function ReviewModal({ isOpen, onClose, restaurantName }: ReviewModalProp
                 <Button variant="outline" className="flex-1 rounded-xl" onClick={onClose}>
                   Huỷ bỏ
                 </Button>
-                <Button className="flex-1 rounded-xl" disabled={rating === 0 || !content.trim()} onClick={onClose}>
-                  Gửi đánh giá
+                <Button 
+                  className="flex-1 rounded-xl" 
+                  disabled={rating === 0 || !content.trim() || createReviewMutation.isPending} 
+                  onClick={handleSubmit}
+                >
+                  {createReviewMutation.isPending ? (
+                    <span className="flex items-center gap-2">
+                      <Loader2 className="h-4 w-4 animate-spin" /> Đang gửi...
+                    </span>
+                  ) : (
+                    'Gửi đánh giá'
+                  )}
                 </Button>
               </div>
             </div>

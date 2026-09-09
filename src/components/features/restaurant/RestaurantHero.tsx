@@ -68,7 +68,7 @@ export function RestaurantHero({ restaurant }: RestaurantHeroProps) {
         <div className="container-app flex flex-col items-start justify-between gap-4 md:flex-row md:items-end">
           <div className="text-white">
             <div className="mb-3 flex flex-wrap items-center gap-2">
-              {restaurant.cuisineTypes.map((type, idx) => (
+              {restaurant.cuisineTypes?.map((type, idx) => (
                 <span
                   key={idx}
                   className="rounded-full bg-primary-500/20 px-3 py-1 text-xs font-semibold text-primary-300 backdrop-blur-md border border-primary-500/30"

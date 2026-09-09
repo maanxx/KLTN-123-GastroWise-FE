@@ -26,7 +26,12 @@ export const ReviewSection: React.FC<ReviewSectionProps> = ({ restaurantId }) =>
     if (!comment.trim()) return;
 
     createReviewMutation.mutate(
-      { restaurant_id: restaurantId, rating, comment },
+      {
+        restaurantId,
+        diemReview: rating,
+        noiDung: comment,
+        userName: user ? (user.fullName || `${(user as any).firstName || ''} ${(user as any).lastName || ''}`.trim() || user.username || user.email) : 'Khách hàng',
+      },
       {
         onSuccess: () => {
           setComment('');
@@ -91,10 +96,10 @@ export const ReviewSection: React.FC<ReviewSectionProps> = ({ restaurantId }) =>
       ) : reviews && reviews.length > 0 ? (
         <div className="space-y-6">
           {reviews.map((review) => (
-            <div key={review.id} className="bg-white p-5 rounded-lg border border-gray-100 shadow-sm flex gap-4">
+            <div key={review.id || review._id || Math.random().toString()} className="bg-white p-5 rounded-lg border border-gray-100 shadow-sm flex gap-4">
               <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden">
                 {review.avatar_url ? (
-                  <img src={review.avatar_url} alt={review.full_name} className="w-full h-full object-cover" />
+                  <img src={review.avatar_url} alt={review.full_name || review.userName} className="w-full h-full object-cover" />
                 ) : (
                   <UserIcon className="w-6 h-6 text-gray-500" />
                 )}
@@ -102,19 +107,21 @@ export const ReviewSection: React.FC<ReviewSectionProps> = ({ restaurantId }) =>
               <div className="flex-1">
                 <div className="flex justify-between items-start">
                   <div>
-                    <h4 className="font-semibold text-gray-900">{review.full_name}</h4>
-                    <p className="text-xs text-gray-500">{new Date(review.created_at).toLocaleDateString('vi-VN')}</p>
+                    <h4 className="font-semibold text-gray-900">{review.full_name || review.userName || review.author || 'Khách hàng'}</h4>
+                    <p className="text-xs text-gray-500">
+                      {new Date(review.createdAt || review.created_at || Date.now()).toLocaleDateString('vi-VN')}
+                    </p>
                   </div>
                   <div className="flex">
                     {[...Array(5)].map((_, i) => (
                       <Star
                         key={i}
-                        className={`w-4 h-4 ${i < review.rating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'}`}
+                        className={`w-4 h-4 ${i < Number(review.rating || review.diemReview || 5) ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'}`}
                       />
                     ))}
                   </div>
                 </div>
-                <p className="mt-3 text-gray-700 text-sm leading-relaxed">{review.comment}</p>
+                <p className="mt-3 text-gray-700 text-sm leading-relaxed">{review.comment || review.noiDung}</p>
               </div>
             </div>
           ))}

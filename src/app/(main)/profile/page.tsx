@@ -8,6 +8,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { useTranslation } from '@/hooks/useTranslation';
+import { AiTasteDnaCard } from '@/components/features/preferences/AiTasteDnaCard';
 
 export default function ProfilePage() {
   const { data: profileResponse, isLoading, isError } = useGetProfile();
@@ -215,7 +216,7 @@ export default function ProfilePage() {
 
         {/* Tab Navigation */}
         <div className="flex gap-2 mb-8 overflow-x-auto pb-2 scrollbar-hide px-2">
-          {['overview', 'achievements', 'vouchers'].map((tab) => (
+          {['overview', 'taste-dna', 'achievements', 'vouchers'].map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
@@ -226,11 +227,19 @@ export default function ProfilePage() {
               }`}
             >
               {tab === 'overview' && t('profile.overview')}
+              {tab === 'taste-dna' && 'Khẩu vị AI 🧬'}
               {tab === 'achievements' && t('profile.achievements')}
               {tab === 'vouchers' && t('profile.vouchers')}
             </button>
           ))}
         </div>
+
+        {/* Tab Content */}
+        {activeTab === 'taste-dna' && (
+          <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <AiTasteDnaCard preferences={user.preferences || []} savedCount={user.savedRestaurants?.length || 0} />
+          </div>
+        )}
 
         {/* Tab Content */}
         {activeTab === 'overview' && (
@@ -288,7 +297,7 @@ export default function ProfilePage() {
           </div>
         )}
 
-        {activeTab === 'eco' && (
+        {(activeTab === 'achievements' || activeTab === 'eco') && (
           <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
             <h2 className="mb-6 font-heading text-2xl font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
               Thành tích Eco <span className="text-2xl">🌱</span>

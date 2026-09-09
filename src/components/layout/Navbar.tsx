@@ -45,6 +45,7 @@ export function Navbar() {
   const navLinks = [
     { name: t('navbar.home'), href: ROUTES.HOME },
     { name: t('navbar.ai_planner'), href: '/ai-planner' },
+    { name: 'AI NutriCam', href: '/ai-nutri' },
     { name: t('navbar.explore'), href: '/explore' },
     { name: t('navbar.itinerary'), href: ROUTES.ITINERARY },
     { name: t('navbar.favorites'), href: '/favorites' },

@@ -9,6 +9,7 @@ import { RestaurantCard } from './RestaurantCard';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { useTranslation } from '@/hooks/useTranslation';
 import { toast } from 'sonner';
+import { AiWeatherRecommendationCard } from './AiWeatherRecommendationCard';
 
 interface SearchFilterBarProps {
   children: React.ReactNode;
@@ -75,8 +76,11 @@ export const SearchFilterBar: React.FC<SearchFilterBarProps> = ({ children }) =>
   const isSearching = currentSearch.length > 0 || imageResults !== null;
 
   return (
-    <section className="py-16 bg-gray-50">
+    <section className="py-16 bg-gray-50 dark:bg-slate-950">
       <div className="container mx-auto px-4 max-w-7xl">
+        {/* Weather AI Recommendation Card */}
+        <AiWeatherRecommendationCard />
+
         <div className="flex flex-col md:flex-row justify-between items-end mb-10 gap-4">
           <div>
             <h2 className="text-3xl font-bold text-gray-900 mb-2">
