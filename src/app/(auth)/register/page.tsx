@@ -11,6 +11,7 @@ import { registerSchema, type RegisterFormData } from '@/lib/validation/auth.sch
 import { useRegisterMutation } from '@/hooks/queries/useAuth';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { useTranslation } from '@/hooks/useTranslation';
+import { toast } from 'sonner';
 
 export default function RegisterPage() {
   const { t } = useTranslation();
@@ -52,7 +53,7 @@ export default function RegisterPage() {
         }
       },
       onError: (error: any) => {
-        alert(t('alert.register_error'));
+        toast.error(error?.message || (t('alert.register_error') as string) || 'Đăng ký thất bại. Email có thể đã tồn tại.');
       },
     });
   };
@@ -166,7 +167,7 @@ export default function RegisterPage() {
         </div>
       </div>
 
-      <div className="mt-8 text-center text-sm text-slate-600 dark:text-slate-400">
+      <div className="mt-8 mb-6 pb-2 text-center text-sm text-slate-600 dark:text-slate-400">
         Đã có tài khoản?{' '}
         <Link href={ROUTES.LOGIN} className="font-semibold text-primary-600 hover:text-primary-500">
           Đăng nhập

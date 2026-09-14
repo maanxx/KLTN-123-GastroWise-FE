@@ -2,7 +2,7 @@ import axios from 'axios';
 
 import { APP_CONFIG } from '@/lib/constants';
 import { AppError, ERROR_MESSAGES } from '@/lib/errors';
-import { getStorageItem, removeStorageItem } from '@/lib/utils';
+import { getAuthToken, removeAuthToken } from '@/lib/utils/storage';
 
 /**
  * Axios instance — cấu hình tập trung cho tất cả API calls
@@ -22,7 +22,7 @@ export const apiClient = axios.create({
  */
 apiClient.interceptors.request.use(
   (config) => {
-    const token = getStorageItem<string>(APP_CONFIG.ACCESS_TOKEN_KEY, '');
+    const token = getAuthToken() || localStorage.getItem('token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -47,12 +47,12 @@ apiClient.interceptors.response.use(
       throw new AppError(0, ERROR_MESSAGES.NETWORK, 'NETWORK_ERROR');
     }
 
+    const { status, data } = error.response;
+
     if (status === 403) {
       const msg = data?.message || '';
       if (msg.toLowerCase().includes('khóa') || msg.toLowerCase().includes('banned')) {
-        removeStorageItem(APP_CONFIG.ACCESS_TOKEN_KEY);
-        removeStorageItem(APP_CONFIG.REFRESH_TOKEN_KEY);
-        removeStorageItem(APP_CONFIG.USER_KEY);
+        removeAuthToken();
         if (typeof window !== 'undefined') {
           alert(msg || 'Tài khoản của bạn đã bị khóa bởi Quản trị viên do vi phạm điều khoản.');
           window.location.href = '/login';
@@ -60,14 +60,12 @@ apiClient.interceptors.response.use(
       }
     }
 
-    // Token hết hạn → xoá token, redirect login
+    // Token hết hạn hoặc Phiên làm việc hết hạn/hợp lệ -> xoá token, redirect login
     if (status === 401) {
-      removeStorageItem(APP_CONFIG.ACCESS_TOKEN_KEY);
-      removeStorageItem(APP_CONFIG.REFRESH_TOKEN_KEY);
-      removeStorageItem(APP_CONFIG.USER_KEY);
+      removeAuthToken();
 
       // Chỉ redirect khi ở client-side
-      if (typeof window !== 'undefined') {
+      if (typeof window !== 'undefined' && !window.location.pathname.startsWith('/login')) {
         window.location.href = '/login';
       }
 

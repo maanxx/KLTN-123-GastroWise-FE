@@ -13,6 +13,7 @@ import { ROUTES } from '@/lib/constants';
 import { cn } from '@/lib/utils';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { useGetNotifications, useMarkNotificationAsRead } from '@/hooks/queries/useNotification';
+import { removeAuthToken, broadcastAuthEvent } from '@/lib/utils/storage';
 
 export function Navbar() {
   const pathname = usePathname();
@@ -325,7 +326,8 @@ export function Navbar() {
                       onClick={() => {
                         setShowUserMenu(false);
                         logout();
-                        localStorage.removeItem('token');
+                        removeAuthToken();
+                        broadcastAuthEvent('LOGOUT');
                         toast.success(t('navbar.logout_success') as string);
                         router.push('/');
                       }}
