@@ -6,9 +6,9 @@ import { ROUTES } from '@/lib/constants';
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex min-h-[calc(100vh-4rem)] bg-white dark:bg-slate-950">
+    <div className="flex min-h-[calc(100vh-4rem)] bg-white dark:bg-slate-950 py-12 lg:py-16">
       {/* Left side - Form */}
-      <div className="flex w-full flex-col justify-center px-4 sm:px-6 lg:flex-none lg:w-1/2 lg:px-20 xl:px-24">
+      <div className="flex w-full flex-col justify-center px-4 sm:px-6 lg:flex-none lg:w-1/2 lg:px-20 xl:px-24 my-auto">
         <div className="mx-auto w-full max-w-sm lg:w-96">
           <div className="mb-8 flex flex-col items-center lg:items-start">
             <Link href={ROUTES.HOME} className="flex items-center gap-2 lg:hidden mb-8 group">

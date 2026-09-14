@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -13,33 +14,72 @@ import { loginSchema } from '@/lib/validation/auth.schema';
 import type { LoginFormData } from '@/lib/validation/auth.schema';
 import { useLoginMutation } from '@/hooks/queries/useAuth';
 import { useAuthStore } from '@/stores/useAuthStore';
+import { getAuthToken, setAuthToken, broadcastAuthEvent, REMEMBERED_EMAIL_KEY } from '@/lib/utils/storage';
 
 export default function LoginPage() {
   const router = useRouter();
   const { t } = useTranslation();
   const loginMutation = useLoginMutation();
-  const setLoginState = useAuthStore((state) => state.login);
+  const { isAuthenticated, login: setLoginState, logout } = useAuthStore();
+  
+  const [rememberMe, setRememberMe] = useState(true);
+
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
   });
 
+  // Redirect Guard: Chỉ redirect về '/' khi CẢ state authenticated VÀ token thực tế đều tồn tại!
+  // Tránh triệt để lỗi Infinite Loop giữa '/' và '/login'
+  useEffect(() => {
+    const existingToken = getAuthToken();
+    if (isAuthenticated && existingToken) {
+      router.replace('/');
+    } else if (!existingToken && isAuthenticated) {
+      logout(); // Dọn dẹp state rác nếu không còn token
+    }
+  }, [isAuthenticated, logout, router]);
+
+  // Đọc email đã ghi nhớ từ localStorage nếu có
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const savedEmail = localStorage.getItem(REMEMBERED_EMAIL_KEY);
+      if (savedEmail) {
+        setValue('email', savedEmail);
+        setRememberMe(true);
+      }
+    }
+  }, [setValue]);
+
   const onSubmit = (data: LoginFormData) => {
     loginMutation.mutate(data, {
       onSuccess: (response: any) => {
         if (response && response.user && response.token) {
-          // Lưu token vào localStorage để gửi kèm Header
-          localStorage.setItem('token', response.token);
+          // Lưu Token linh hoạt theo Remember Me (localStorage vs sessionStorage)
+          setAuthToken(response.token, rememberMe);
+          
+          if (rememberMe) {
+            localStorage.setItem(REMEMBERED_EMAIL_KEY, data.email);
+          } else {
+            localStorage.removeItem(REMEMBERED_EMAIL_KEY);
+          }
+
+          // Cập nhật State Zustand
           setLoginState(response.user);
-          toast.success(t('login.success') as string);
-          router.push('/');
+
+          // Broadcast Event thông báo đăng nhập cho các Tab khác
+          broadcastAuthEvent('LOGIN', response.user.id);
+
+          toast.success((t('login.success') as string) || 'Đăng nhập thành công!');
+          router.replace('/');
         }
       },
       onError: (error: any) => {
-        toast.error(error?.message || (t('login.fail') as string));
+        toast.error(error?.message || (t('login.fail') as string) || 'Đăng nhập thất bại!');
       },
     });
   };
@@ -72,8 +112,20 @@ export default function LoginPage() {
             error={errors.password?.message}
             {...register('password')}
           />
-          <div className="flex justify-end">
-            <Link href="#" className="text-xs font-medium text-primary-600 hover:text-primary-500">
+          
+          {/* Checkbox Ghi nhớ mật khẩu */}
+          <div className="flex items-center justify-between pt-2">
+            <label className="flex items-center gap-2 text-xs text-slate-600 dark:text-slate-400 cursor-pointer select-none">
+              <input
+                type="checkbox"
+                checked={rememberMe}
+                onChange={(e) => setRememberMe(e.target.checked)}
+                className="h-4 w-4 rounded border-slate-300 text-primary-600 focus:ring-primary-500"
+              />
+              <span>Ghi nhớ đăng nhập</span>
+            </label>
+
+            <Link href="/forgot-password" className="text-xs font-medium text-primary-600 hover:text-primary-500">
               {t('login.forgot_password')}
             </Link>
           </div>
@@ -137,7 +189,7 @@ export default function LoginPage() {
         </div>
       </div>
 
-      <div className="mt-8 text-center text-sm text-slate-600 dark:text-slate-400">
+      <div className="mt-8 mb-6 pb-2 text-center text-sm text-slate-600 dark:text-slate-400">
         {t('login.no_account')}{' '}
         <Link href={ROUTES.REGISTER} className="font-semibold text-primary-600 hover:text-primary-500">
           {t('login.register_now')}
