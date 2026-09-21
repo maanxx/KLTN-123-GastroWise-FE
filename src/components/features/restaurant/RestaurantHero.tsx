@@ -64,7 +64,7 @@ export function RestaurantHero({ restaurant }: RestaurantHeroProps) {
       <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-900/40 to-transparent" />
 
       {/* Content */}
-      <div className="absolute bottom-0 left-0 w-full pb-8 pt-12">
+      <div className="absolute bottom-0 left-0 w-full pb-14 pt-12">
         <div className="container-app flex flex-col items-start justify-between gap-4 md:flex-row md:items-end">
           <div className="text-white">
             <div className="mb-3 flex flex-wrap items-center gap-2">

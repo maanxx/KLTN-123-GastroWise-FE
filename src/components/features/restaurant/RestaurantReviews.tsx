@@ -76,7 +76,7 @@ export function RestaurantReviews({ reviews, restaurantId, restaurantName }: Res
 
   return (
     <>
-      <Card className="mt-12 p-6">
+      <Card className="mt-8 p-6 md:p-8">
         <div className="mb-8 flex items-center justify-between">
           <div>
             <h2 className="font-heading text-xl font-bold text-slate-900 dark:text-white">

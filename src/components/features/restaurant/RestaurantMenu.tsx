@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 import { formatCurrency } from '@/lib/utils';
 import type { MenuItem } from '@/types/restaurant';
-import { Button } from '@/components/ui';
+import { Button, Card } from '@/components/ui';
 
 interface RestaurantMenuProps {
   menu: MenuItem[];
@@ -78,7 +78,7 @@ export function RestaurantMenu({ menu }: RestaurantMenuProps) {
   };
 
   return (
-    <div className="mt-12">
+    <Card className="p-6 md:p-8">
       {/* Header & AI Translator Bar */}
       <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
@@ -168,21 +168,21 @@ export function RestaurantMenu({ menu }: RestaurantMenuProps) {
       {/* Cultural Explainer Modal */}
       <AnimatePresence>
         {activeExplainItem && (
-          <>
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setActiveExplainItem(null)}
-              className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm"
+              className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm"
             />
             <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              initial={{ opacity: 0, scale: 0.95, y: 10 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="fixed left-1/2 top-1/2 z-50 w-full max-w-lg -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-3xl bg-white p-6 shadow-2xl dark:bg-slate-900"
+              exit={{ opacity: 0, scale: 0.95, y: 10 }}
+              className="relative z-10 flex max-h-[85vh] w-full max-w-lg flex-col overflow-hidden rounded-3xl bg-white shadow-2xl dark:bg-slate-900"
             >
-              <div className="mb-4 flex items-center justify-between border-b border-slate-100 pb-3 dark:border-slate-800">
+              <div className="flex shrink-0 items-center justify-between border-b border-slate-100 p-4 dark:border-slate-800">
                 <div className="flex items-center gap-2">
                   <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-indigo-500 text-white">
                     <Sparkles className="h-4 w-4" />
@@ -196,41 +196,43 @@ export function RestaurantMenu({ menu }: RestaurantMenuProps) {
                 </button>
               </div>
 
-              <h2 className="font-heading text-xl font-extrabold text-slate-900 dark:text-white mb-4">
-                {activeExplainItem.name}
-              </h2>
+              <div className="flex-1 overflow-y-auto p-6">
+                <h2 className="mb-4 font-heading text-xl font-extrabold text-slate-900 dark:text-white">
+                  {activeExplainItem.name}
+                </h2>
 
-              {(() => {
-                const exp = getCulturalExplanation(activeExplainItem.name);
-                return (
-                  <div className="space-y-4 text-xs leading-relaxed text-slate-700 dark:text-slate-300">
-                    <div className="rounded-2xl bg-indigo-50/70 p-4 dark:bg-indigo-950/40">
-                      <strong className="block font-bold text-indigo-900 dark:text-indigo-300 mb-1">🏛️ Nguồn gốc & Điểm độc đáo:</strong>
-                      <p>{exp.origin}</p>
+                {(() => {
+                  const exp = getCulturalExplanation(activeExplainItem.name);
+                  return (
+                    <div className="space-y-4 text-xs leading-relaxed text-slate-700 dark:text-slate-300">
+                      <div className="rounded-2xl bg-indigo-50/70 p-4 dark:bg-indigo-950/40">
+                        <strong className="mb-1 block font-bold text-indigo-900 dark:text-indigo-300">🏛️ Nguồn gốc & Điểm độc đáo:</strong>
+                        <p>{exp.origin}</p>
+                      </div>
+
+                      <div className="rounded-2xl bg-amber-50/70 p-4 dark:bg-amber-950/40">
+                        <strong className="mb-1 block font-bold text-amber-900 dark:text-amber-300">🌿 Thành phần chính:</strong>
+                        <p>{exp.ingredients}</p>
+                      </div>
+
+                      <div className="rounded-2xl bg-emerald-50/70 p-4 dark:bg-emerald-950/40">
+                        <strong className="mb-1 block font-bold text-emerald-900 dark:text-emerald-300">🥢 Cách thưởng thức chuẩn vị người bản địa:</strong>
+                        <p>{exp.howToEat}</p>
+                      </div>
                     </div>
+                  );
+                })()}
 
-                    <div className="rounded-2xl bg-amber-50/70 p-4 dark:bg-amber-950/40">
-                      <strong className="block font-bold text-amber-900 dark:text-amber-300 mb-1">🌿 Thành phần chính:</strong>
-                      <p>{exp.ingredients}</p>
-                    </div>
-
-                    <div className="rounded-2xl bg-emerald-50/70 p-4 dark:bg-emerald-950/40">
-                      <strong className="block font-bold text-emerald-900 dark:text-emerald-300 mb-1">🥢 Cách thưởng thức chuẩn vị người bản địa:</strong>
-                      <p>{exp.howToEat}</p>
-                    </div>
-                  </div>
-                );
-              })()}
-
-              <div className="mt-6 flex justify-end">
-                <Button onClick={() => setActiveExplainItem(null)} className="rounded-xl">
-                  Đã hiểu
-                </Button>
+                <div className="mt-6 flex justify-end">
+                  <Button onClick={() => setActiveExplainItem(null)} className="rounded-xl">
+                    Đã hiểu
+                  </Button>
+                </div>
               </div>
             </motion.div>
-          </>
+          </div>
         )}
       </AnimatePresence>
-    </div>
+    </Card>
   );
 }

@@ -75,7 +75,13 @@ export const RestaurantCard: React.FC<RestaurantCardProps> = ({ restaurant, acti
     cuisineTags = ['Nhà hàng'];
   }
 
-  const rating = (restaurant as any).diemTrungBinh ? Number((restaurant as any).diemTrungBinh) : restaurant.rating_avg ? (Number(restaurant.rating_avg) / 2) : null;
+  const rawRating = (restaurant as any).diemTrungBinh 
+    ? Number((restaurant as any).diemTrungBinh) 
+    : restaurant.rating_avg 
+      ? Number(restaurant.rating_avg) 
+      : null;
+
+  const rating = rawRating ? (rawRating > 5 ? rawRating / 2 : rawRating) : null;
 
   return (
     <Link href={getRestaurantUrl(restaurant)} className="block h-full group">

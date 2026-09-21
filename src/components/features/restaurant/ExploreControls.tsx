@@ -208,16 +208,17 @@ export const ExploreControls = () => {
                 <div className="flex flex-wrap gap-2">
                   {[
                     { value: 'all', label: t('explore.filter_all') },
-                    { value: 'gte9', label: t('explore.filter_rating_9') },
-                    { value: '8to9', label: t('explore.filter_rating_8_9') },
-                    { value: '7to8', label: t('explore.filter_rating_7_8') },
+                    { value: 'gte4_5', label: t('explore.filter_rating_4_5') },
+                    { value: 'gte4', label: t('explore.filter_rating_4') },
+                    { value: 'gte3_5', label: t('explore.filter_rating_3_5') },
+                    { value: 'gte3', label: t('explore.filter_rating_3') },
                   ].map(opt => (
                     <button
                       key={opt.value}
                       onClick={() => setTempRating(opt.value)}
-                      className={`px-4 py-2 text-sm font-medium rounded-lg border ${
+                      className={`px-4 py-2 text-sm font-medium rounded-lg border transition-colors ${
                         tempRating === opt.value 
-                          ? 'border-orange-500 bg-orange-50 text-orange-700 dark:bg-orange-500/10 dark:text-orange-400' 
+                          ? 'border-orange-500 bg-orange-50 text-orange-700 dark:bg-orange-500/10 dark:text-orange-400 font-bold shadow-sm' 
                           : 'border-slate-200 text-slate-600 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-300'
                       }`}
                     >
