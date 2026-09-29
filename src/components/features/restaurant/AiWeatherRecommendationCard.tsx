@@ -1,12 +1,13 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { CloudRain, Sun, Thermometer, Sparkles, HeartPulse, RefreshCw, ArrowRight } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { CloudRain, Sun, Thermometer, Sparkles, RefreshCw, ArrowRight, MapPin } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
+import api from '@/lib/api/axios';
 
 interface WeatherPreset {
-  condition: 'rainy' | 'sunny' | 'cold' | 'hot';
+  condition: 'rainy' | 'sunny' | 'cool' | 'hot';
   city: string;
   temp: number;
   icon: any;
@@ -17,7 +18,7 @@ interface WeatherPreset {
 
 export function AiWeatherRecommendationCard() {
   const router = useRouter();
-  const [activeMood, setActiveMood] = useState<'normal' | 'tired' | 'diet'>('normal');
+  const [loading, setLoading] = useState<boolean>(true);
   const [weather, setWeather] = useState<WeatherPreset>({
     condition: 'rainy',
     city: 'Hồ Chí Minh',
@@ -28,27 +29,68 @@ export function AiWeatherRecommendationCard() {
     aiAdvice: 'Thời tiết se lạnh & mưa phùn thích hợp thưởng thức các món lẩu cay nóng hoặc tô phở bò nghiút khói để giữ ấm cơ thể!',
   });
 
-  const toggleWeather = () => {
-    if (weather.condition === 'rainy') {
-      setWeather({
-        condition: 'sunny',
-        city: 'Hà Nội',
-        temp: 34,
-        icon: Sun,
-        title: 'Nắng oi bức, 34°C',
-        recommendedDishes: ['Trà Trái Cây', 'Chè Khúc Bạch', 'Bún Thịt Nướng', 'Gỏi Cuốn'],
-        aiAdvice: 'Trời nắng oi nồng thích hợp giải nhiệt với trà trái cây tươi mát, chè khúc bạch thanh ngọt hoặc các món cuốn nhẹ nhàng!',
-      });
+  const fetchWeatherRecommendation = async (lat?: number, lon?: number) => {
+    setLoading(true);
+    try {
+      const params = lat && lon ? `?lat=${lat}&lon=${lon}` : '';
+      const response = await api.get(`/restaurants/weather-recommend${params}`);
+      const data = response.data;
+      if (data && data.weather) {
+        const wType = data.weather.weather_type || data.weather.condition || 'cool';
+        const isRainy = wType === 'rainy';
+        const isHot = wType === 'hot';
+        
+        // Trích xuất tên các quán ăn thực tế từ CSDL MongoDB Atlas do AI trả về
+        const realDishes = data.data && data.data.length > 0
+          ? data.data.slice(0, 5).map((r: any) => r.name || r.tenQuan)
+          : (isHot ? ['Trà Sữa 3K', 'Sinh Tố', 'Nước Ép', 'Gỏi Cuốn'] : ['Lẩu Thái Cay', 'Phở Bò Tái', 'Nướng BBQ', 'Bún Bò']);
+
+        setWeather({
+          condition: wType,
+          city: 'Hồ Chí Minh',
+          temp: Math.round(data.weather.temperature || 32),
+          icon: isRainy ? CloudRain : (isHot ? Sun : Thermometer),
+          title: data.weather.banner_title || `${data.weather.condition_text || 'Trời nắng nóng'}, ${Math.round(data.weather.temperature || 32)}°C`,
+          recommendedDishes: realDishes,
+          aiAdvice: data.weather.banner_desc || 'Gợi ý món ăn phù hợp nhất với điều kiện khí hậu thời tiết hiện tại.',
+        });
+      }
+    } catch (err) {
+      console.warn('Fallback to default weather recommendation:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (typeof window !== 'undefined' && 'geolocation' in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          fetchWeatherRecommendation(pos.coords.latitude, pos.coords.longitude);
+        },
+        () => {
+          fetchWeatherRecommendation();
+        },
+        { timeout: 5000 }
+      );
     } else {
-      setWeather({
-        condition: 'rainy',
-        city: 'Hồ Chí Minh',
-        temp: 24,
-        icon: CloudRain,
-        title: 'Mưa rào nhẹ, Se lạnh 24°C',
-        recommendedDishes: ['Lẩu Thái Cay', 'Phở Bò Tái', 'Cháo Gà Nóng', 'Bún Riêu Cua'],
-        aiAdvice: 'Thời tiết se lạnh & mưa phùn thích hợp thưởng thức các món lẩu cay nóng hoặc tô phở bò nghiút khói để giữ ấm cơ thể!',
-      });
+      fetchWeatherRecommendation();
+    }
+  }, []);
+
+  const refreshRealtimeWeather = () => {
+    if (typeof window !== 'undefined' && 'geolocation' in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          fetchWeatherRecommendation(pos.coords.latitude, pos.coords.longitude);
+        },
+        () => {
+          fetchWeatherRecommendation();
+        },
+        { timeout: 5000 }
+      );
+    } else {
+      fetchWeatherRecommendation();
     }
   };
 
@@ -75,23 +117,17 @@ export function AiWeatherRecommendationCard() {
           </div>
           <div>
             <h3 className="font-heading font-bold text-slate-900 dark:text-white flex items-center gap-2 text-base">
-              Gợi Ý Món Ăn Theo Thời Tiết & Sức Khỏe
+              Gợi Ý Món Ăn Theo Thời Tiết & GPS Realtime
               <span className="rounded-full bg-sky-100 px-2.5 py-0.5 text-xs font-semibold text-sky-700 dark:bg-sky-900/60 dark:text-sky-300">
                 Weather AI
               </span>
             </h3>
-            <p className="text-xs text-slate-500 dark:text-slate-400">
+            <p className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1">
+              <MapPin className="h-3 w-3 text-sky-500" />
               Tự động phân tích khí hậu thực tế tại {weather.city}
             </p>
           </div>
         </div>
-
-        <button
-          onClick={toggleWeather}
-          className="flex items-center gap-1.5 rounded-xl border border-sky-200 bg-white/80 px-3 py-1.5 text-xs font-semibold text-sky-700 hover:bg-sky-50 dark:border-sky-800 dark:bg-slate-800 dark:text-sky-300 shadow-sm transition-all"
-        >
-          <RefreshCw className="h-3.5 w-3.5" /> Đổi thời tiết giả định
-        </button>
       </div>
 
       {/* Main Grid */}
@@ -99,7 +135,7 @@ export function AiWeatherRecommendationCard() {
         {/* Left: Weather Status Card */}
         <div className="md:col-span-5 flex items-center gap-4 rounded-2xl border border-sky-200/60 bg-white/70 p-4 backdrop-blur-md dark:border-sky-900/40 dark:bg-slate-950/50">
           <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-tr from-sky-400 to-blue-600 text-white shadow-lg shadow-sky-500/30">
-            <WeatherIcon className="h-8 w-8 animate-bounce" />
+            <WeatherIcon className="h-8 w-8 animate-pulse" />
           </div>
           <div>
             <div className="flex items-center gap-1.5 text-xs font-bold text-sky-600 dark:text-sky-400">
