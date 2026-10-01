@@ -76,7 +76,11 @@ export const RestaurantCard: React.FC<RestaurantCardProps> = ({ restaurant, acti
   const dbTags = (restaurant as any).tags || restaurant.cuisine;
   
   if (dbTags) {
-    cuisineTags = dbTags.split(',').map((t: string) => t.trim());
+    if (Array.isArray(dbTags)) {
+      cuisineTags = dbTags.map((t: string) => String(t).trim());
+    } else if (typeof dbTags === 'string') {
+      cuisineTags = dbTags.split(',').map((t: string) => t.trim());
+    }
   } else {
     cuisineTags = ['Nhà hàng'];
   }

@@ -52,7 +52,11 @@ export default function RestaurantDetailPage({ params }: { params: { id: string 
           ? (Number(apiRestaurant.diemTrungBinh) / 2).toFixed(1) 
           : Number(apiRestaurant.diemTrungBinh).toFixed(1)) 
       : '5.0',
-    cuisineTypes: apiRestaurant.tags ? apiRestaurant.tags.split(',') : ['Nhà hàng'],
+    cuisineTypes: Array.isArray(apiRestaurant.tags)
+      ? apiRestaurant.tags.map((t: any) => String(t).trim())
+      : typeof apiRestaurant.tags === 'string'
+      ? apiRestaurant.tags.split(',').map((t: string) => t.trim())
+      : ['Nhà hàng'],
     description: apiRestaurant.description || '',
     phone: apiRestaurant.contactPhone || 'Đang cập nhật',
     shopeeUrl: apiRestaurant.urlGoc 
