@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { Be_Vietnam_Pro, Inter } from 'next/font/google';
 
 import { AiChatWidget } from '@/components/features/ai/AiChatWidget';
 import { Footer, Navbar } from '@/components/layout';
@@ -7,6 +8,20 @@ import { SessionGuardProvider } from '@/providers/SessionGuardProvider';
 import { Toaster } from 'sonner';
 
 import './globals.css';
+
+const beVietnamPro = Be_Vietnam_Pro({
+  subsets: ['latin', 'vietnamese'],
+  weight: ['400', '500', '600', '700', '800'],
+  variable: '--font-be-vietnam',
+  display: 'swap',
+});
+
+const inter = Inter({
+  subsets: ['latin', 'vietnamese'],
+  weight: ['400', '500', '600', '700', '800'],
+  variable: '--font-inter',
+  display: 'swap',
+});
 
 export const metadata: Metadata = {
   title: {
@@ -18,10 +33,21 @@ export const metadata: Metadata = {
   keywords: ['ẩm thực', 'TP.HCM', 'lộ trình ăn uống', 'GastroWise', 'food', 'restaurant'],
 };
 
+import { CartDrawer } from '@/components/layout/CartDrawer';
+import { GastroBotWidget } from '@/components/layout/GastroBotWidget';
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="vi" suppressHydrationWarning>
-      <body className="flex min-h-screen flex-col bg-primary-50/30 antialiased dark:bg-primary-950">
+    <html lang="vi" className={`${beVietnamPro.variable} ${inter.variable}`} suppressHydrationWarning>
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,600&display=swap"
+          rel="stylesheet"
+        />
+      </head>
+      <body className="flex min-h-screen flex-col bg-primary-50/30 font-sans antialiased dark:bg-primary-950">
         <QueryProvider>
           <SessionGuardProvider>
             <Navbar />
@@ -29,7 +55,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               {children}
             </main>
             <Footer />
-            <AiChatWidget />
+            <CartDrawer />
+            <GastroBotWidget />
           </SessionGuardProvider>
         </QueryProvider>
         <Toaster 

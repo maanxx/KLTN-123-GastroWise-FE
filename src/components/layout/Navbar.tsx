@@ -15,6 +15,8 @@ import { useAuthStore } from '@/stores/useAuthStore';
 import { useGetNotifications, useMarkNotificationAsRead } from '@/hooks/queries/useNotification';
 import { removeAuthToken, broadcastAuthEvent } from '@/lib/utils/storage';
 
+import { ImageSearchModal } from './ImageSearchModal';
+
 export function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
@@ -22,6 +24,7 @@ export function Navbar() {
   const [showNotifications, setShowNotifications] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showAiMenu, setShowAiMenu] = useState(false);
+  const [showImageSearchModal, setShowImageSearchModal] = useState(false);
 
   const { isAuthenticated, user, logout } = useAuthStore();
   const { t } = useTranslation();
@@ -76,7 +79,7 @@ export function Navbar() {
   return (
     <header
       className={cn(
-        'fixed inset-x-0 top-0 z-50 transition-all duration-300',
+        'fixed inset-x-0 top-0 z-40 transition-all duration-300',
         isScrolled
           ? 'bg-white/85 py-3 shadow-sm backdrop-blur-xl dark:bg-slate-950/85'
           : 'bg-transparent py-5',
@@ -185,6 +188,16 @@ export function Navbar() {
 
         {/* Actions Zone */}
         <div className="flex items-center gap-3">
+          {/* AI Image Search Button */}
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setShowImageSearchModal(true)}
+            title="Tìm món ăn bằng ảnh AI"
+            className="relative text-amber-600 hover:bg-amber-50 hover:text-amber-700 dark:text-amber-400 dark:hover:bg-amber-950/30"
+          >
+            <Camera className="h-5 w-5" />
+          </Button>
 
           {/* Favorites Icon Button (Next to Bell) */}
           <Link href="/favorites" title="Danh sách yêu thích">
@@ -361,6 +374,11 @@ export function Navbar() {
           </Button>
         </div>
       </div>
+
+      <ImageSearchModal
+        isOpen={showImageSearchModal}
+        onClose={() => setShowImageSearchModal(false)}
+      />
     </header>
   );
 }

@@ -34,9 +34,10 @@ export const PersonalizedSwiperSlider: React.FC<PersonalizedSwiperSliderProps> =
         }
         .personalized-slider .swiper-pagination-bullet-active {
           opacity: 1;
-          width: 20px !important;
+          width: 24px !important;
           border-radius: 9999px !important;
-          background-color: #3b82f6 !important;
+          background: linear-gradient(135deg, #059669 0%, #10b981 100%) !important;
+          box-shadow: 0 2px 8px rgba(16, 185, 129, 0.4) !important;
         }
       `}</style>
 

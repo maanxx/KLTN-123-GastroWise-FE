@@ -22,6 +22,9 @@ export default function AiNutriPage() {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [foodName, setFoodName] = useState<string | null>(null);
+  const [englishName, setEnglishName] = useState<string | null>(null);
+  const [similarDishes, setSimilarDishes] = useState<string[]>([]);
+  const [touristGuide, setTouristGuide] = useState<string | null>(null);
   const [nutrition, setNutrition] = useState<NutritionData | null>(null);
   const [restaurants, setRestaurants] = useState<any[]>([]);
 
@@ -75,6 +78,9 @@ export default function AiNutriPage() {
     setSelectedImage(previewUrl);
     setIsAnalyzing(true);
     setFoodName(null);
+    setEnglishName(null);
+    setSimilarDishes([]);
+    setTouristGuide(null);
     setNutrition(null);
     setRestaurants([]);
 
@@ -82,6 +88,9 @@ export default function AiNutriPage() {
       const res = await restaurantApi.searchByImage(file);
       const detected = res?.detectedFood || 'Phở Bò Tái Nạm';
       setFoodName(detected);
+      setEnglishName(res?.englishName || 'Vietnamese Special Dish');
+      setSimilarDishes(res?.similarDishes || ['Bún Bò Huế', 'Hủ Tiếu Nam Vang', 'Phở Gà']);
+      setTouristGuide(res?.touristGuide || 'A popular authentic Vietnamese dish cooked with aromatic fresh spices and served hot.');
       setNutrition(getMockNutrition(detected));
       setRestaurants(res?.data || []);
     } catch (err) {
@@ -89,6 +98,9 @@ export default function AiNutriPage() {
       // Fallback
       const detected = 'Phở Bò Tái Nạm';
       setFoodName(detected);
+      setEnglishName('Vietnamese Beef Noodle Soup (Pho)');
+      setSimilarDishes(['Bún Bò Huế', 'Phở Gà', 'Hủ Tiếu Nam Vang']);
+      setTouristGuide('A world-famous Vietnamese staple featuring aromatic bone broth, flat rice noodles, fresh herbs, and tender beef slices.');
       setNutrition(getMockNutrition(detected));
     } finally {
       setIsAnalyzing(false);
@@ -181,7 +193,7 @@ export default function AiNutriPage() {
             ) : foodName && nutrition ? (
               <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }}>
                 <Card className="p-6 border-amber-200/80 bg-white/80 backdrop-blur-md shadow-xl dark:border-amber-900/40 dark:bg-slate-900">
-                  {/* Dish Title & Badge */}
+                  {/* Dish Title & English Translation for International Tourists */}
                   <div className="mb-6 flex items-center justify-between border-b border-slate-100 pb-4 dark:border-slate-800">
                     <div>
                       <span className="text-xs font-semibold uppercase tracking-wider text-amber-600 dark:text-amber-400">
@@ -190,12 +202,45 @@ export default function AiNutriPage() {
                       <h2 className="font-heading text-2xl font-extrabold text-slate-900 dark:text-white">
                         {foodName}
                       </h2>
+                      {englishName && (
+                        <p className="text-xs font-medium text-slate-500 italic mt-0.5">
+                          🌎 English name: <strong className="text-slate-700 dark:text-slate-300">{englishName}</strong>
+                        </p>
+                      )}
                     </div>
                     <div className="flex items-center gap-1.5 rounded-2xl bg-amber-500/10 px-4 py-2 font-extrabold text-amber-600 dark:text-amber-400">
                       <Flame className="h-5 w-5 fill-amber-500 text-amber-500" />
                       <span>{nutrition.calories} kcal</span>
                     </div>
                   </div>
+
+                  {/* Tourist Guide Explanation */}
+                  {touristGuide && (
+                    <div className="mb-5 rounded-2xl border border-sky-100 bg-sky-50/60 p-3.5 text-xs text-sky-900 dark:border-sky-900/40 dark:bg-sky-950/40 dark:text-sky-200 leading-relaxed">
+                      💡 <strong className="text-sky-700 dark:text-sky-300">Tourist Culinary Guide:</strong> {touristGuide}
+                    </div>
+                  )}
+
+                  {/* Similar Dishes Section */}
+                  {similarDishes && similarDishes.length > 0 && (
+                    <div className="mb-6 rounded-2xl bg-amber-50/50 p-4 border border-amber-200/60 dark:bg-slate-800/40 dark:border-slate-700">
+                      <span className="text-xs font-bold text-amber-800 dark:text-amber-300 mb-2 block">
+                        🍜 Gợi ý món ăn tương đồng (Similar Dishes You Might Like):
+                      </span>
+                      <div className="flex flex-wrap gap-2">
+                        {similarDishes.map((dish, idx) => (
+                          <Link
+                            key={idx}
+                            href={`/?search=${encodeURIComponent(dish)}`}
+                            className="group flex items-center gap-1.5 rounded-xl bg-white px-3 py-1.5 text-xs font-bold text-slate-800 shadow-sm transition-all hover:bg-amber-500 hover:text-white dark:bg-slate-800 dark:text-slate-200"
+                          >
+                            <span>{dish}</span>
+                            <ArrowRight className="h-3 w-3 opacity-0 transition-opacity group-hover:opacity-100" />
+                          </Link>
+                        ))}
+                      </div>
+                    </div>
+                  )}
 
                   {/* Macros Breakdown Grid */}
                   <div className="mb-6 grid grid-cols-4 gap-3 text-center">

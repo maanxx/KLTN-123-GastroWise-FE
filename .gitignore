@@ -53,3 +53,17 @@ next-env.d.ts
 # === Misc ===
 *.bak
 *.tmp
+
+# === Agent & AI Assistant Temporary Files ===
+.gemini/
+.antigravity/
+.temp/
+.tempmediaStorage/
+scratch/
+implementation_plan.md
+walkthrough.md
+task.md
+task_plan.md
+scratchpad_*.md
+*.temp.md
+

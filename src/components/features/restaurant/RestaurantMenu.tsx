@@ -1,22 +1,25 @@
 'use client';
 
 import { useState } from 'react';
-import { Flame, Sparkles, Languages, Info, X } from 'lucide-react';
+import { Flame, Sparkles, Languages, Info, X, Plus } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { toast } from 'sonner';
 
 import { formatCurrency } from '@/lib/utils';
 import type { MenuItem } from '@/types/restaurant';
-import { Button } from '@/components/ui';
+import { Button, Card } from '@/components/ui';
+import { useCartStore } from '@/stores/useCartStore';
 
 interface RestaurantMenuProps {
   menu: MenuItem[];
 }
 
-type Lang = 'vi' | 'en' | 'ja' | 'ko';
+type Lang = 'vi' | 'en';
 
 export function RestaurantMenu({ menu }: RestaurantMenuProps) {
   const [selectedLang, setSelectedLang] = useState<Lang>('vi');
   const [activeExplainItem, setActiveExplainItem] = useState<MenuItem | null>(null);
+  const addItem = useCartStore((state) => state.addItem);
 
   const translateDish = (name: string, lang: Lang): string => {
     if (lang === 'vi') return name;
@@ -30,20 +33,6 @@ export function RestaurantMenu({ menu }: RestaurantMenuProps) {
       if (lower.includes('bún đậu')) return name + ' (Vermicelli with Tofu & Shrimp Paste)';
       if (lower.includes('cà phê')) return name + ' (Vietnamese Drip Coffee)';
       return name + ' (Vietnamese Specialty)';
-    }
-
-    if (lang === 'ja') {
-      if (lower.includes('phở')) return name + ' (ベトナム伝統フォー)';
-      if (lower.includes('cơm tấm')) return name + ' (ベトナム風豚焼き肉ご飯)';
-      if (lower.includes('cà phê')) return name + ' (ベトナムコーヒー)';
-      return name + ' (ベトナム名物)';
-    }
-
-    if (lang === 'ko') {
-      if (lower.includes('phở')) return name + ' (베트남 쌀국수)';
-      if (lower.includes('cơm tấm')) return name + ' (베트남식 돼지갈비 덮밥)';
-      if (lower.includes('cà phê')) return name + ' (베트남 연유 커피)';
-      return name + ' (베트남 특선 요리)';
     }
 
     return name;
@@ -78,7 +67,7 @@ export function RestaurantMenu({ menu }: RestaurantMenuProps) {
   };
 
   return (
-    <div className="mt-12">
+    <Card className="p-6 md:p-8">
       {/* Header & AI Translator Bar */}
       <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
@@ -88,17 +77,15 @@ export function RestaurantMenu({ menu }: RestaurantMenuProps) {
               AI Smart Menu
             </span>
           </h2>
-          <p className="text-xs text-slate-500">Hỗ trợ phiên dịch đa ngôn ngữ & giải thích văn hóa ẩm thực bởi AI</p>
+          <p className="text-xs text-slate-500">Phiên dịch thực đơn & giải thích văn hóa ẩm thực bởi AI</p>
         </div>
 
         {/* Language Toggles */}
         <div className="flex items-center gap-1 rounded-2xl border border-slate-200 bg-white p-1.5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
           <Languages className="ml-2 h-4 w-4 text-slate-400" />
           {[
-            { id: 'vi', label: '🇻🇳 VI' },
-            { id: 'en', label: '🇬🇧 EN' },
-            { id: 'ja', label: '🇯🇵 JA' },
-            { id: 'ko', label: '🇰🇷 KO' },
+            { id: 'vi', label: '🇻🇳 Tiếng Việt' },
+            { id: 'en', label: '🇬🇧 English' },
           ].map((l) => (
             <button
               key={l.id}
@@ -146,12 +133,31 @@ export function RestaurantMenu({ menu }: RestaurantMenuProps) {
                     {formatCurrency(item.price)}
                   </div>
 
-                  <button
-                    onClick={() => setActiveExplainItem(item)}
-                    className="flex items-center gap-1 text-xs font-bold text-indigo-600 hover:underline dark:text-indigo-400"
-                  >
-                    <Sparkles className="h-3.5 w-3.5" /> AI Giải Thích Văn Hóa
-                  </button>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => setActiveExplainItem(item)}
+                      className="flex items-center gap-1 text-xs font-bold text-indigo-600 hover:underline dark:text-indigo-400"
+                    >
+                      <Sparkles className="h-3.5 w-3.5" /> AI Giải Thích
+                    </button>
+
+                    <button
+                      onClick={() => {
+                        addItem({
+                          id: item.id || (item as any)._id || Math.random().toString(),
+                          name: item.name,
+                          price: item.price,
+                          image: item.image,
+                          restaurantId: 'rest-1',
+                          restaurantName: 'Nhà Hàng GastroWise',
+                        });
+                        toast.success(`Đã thêm "${item.name}" vào giỏ hàng!`);
+                      }}
+                      className="flex items-center gap-1.5 rounded-xl bg-primary-600 px-3 py-1.5 text-xs font-bold text-white shadow-md shadow-primary-500/20 hover:bg-primary-500 active:scale-95 transition-all"
+                    >
+                      <Plus className="h-3.5 w-3.5" /> Thêm món
+                    </button>
+                  </div>
                 </div>
               </div>
 
@@ -168,21 +174,21 @@ export function RestaurantMenu({ menu }: RestaurantMenuProps) {
       {/* Cultural Explainer Modal */}
       <AnimatePresence>
         {activeExplainItem && (
-          <>
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setActiveExplainItem(null)}
-              className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm"
+              className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm"
             />
             <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              initial={{ opacity: 0, scale: 0.95, y: 10 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="fixed left-1/2 top-1/2 z-50 w-full max-w-lg -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-3xl bg-white p-6 shadow-2xl dark:bg-slate-900"
+              exit={{ opacity: 0, scale: 0.95, y: 10 }}
+              className="relative z-10 flex max-h-[85vh] w-full max-w-lg flex-col overflow-hidden rounded-3xl bg-white shadow-2xl dark:bg-slate-900"
             >
-              <div className="mb-4 flex items-center justify-between border-b border-slate-100 pb-3 dark:border-slate-800">
+              <div className="flex shrink-0 items-center justify-between border-b border-slate-100 p-4 dark:border-slate-800">
                 <div className="flex items-center gap-2">
                   <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-indigo-500 text-white">
                     <Sparkles className="h-4 w-4" />
@@ -196,41 +202,43 @@ export function RestaurantMenu({ menu }: RestaurantMenuProps) {
                 </button>
               </div>
 
-              <h2 className="font-heading text-xl font-extrabold text-slate-900 dark:text-white mb-4">
-                {activeExplainItem.name}
-              </h2>
+              <div className="flex-1 overflow-y-auto p-6">
+                <h2 className="mb-4 font-heading text-xl font-extrabold text-slate-900 dark:text-white">
+                  {activeExplainItem.name}
+                </h2>
 
-              {(() => {
-                const exp = getCulturalExplanation(activeExplainItem.name);
-                return (
-                  <div className="space-y-4 text-xs leading-relaxed text-slate-700 dark:text-slate-300">
-                    <div className="rounded-2xl bg-indigo-50/70 p-4 dark:bg-indigo-950/40">
-                      <strong className="block font-bold text-indigo-900 dark:text-indigo-300 mb-1">🏛️ Nguồn gốc & Điểm độc đáo:</strong>
-                      <p>{exp.origin}</p>
+                {(() => {
+                  const exp = getCulturalExplanation(activeExplainItem.name);
+                  return (
+                    <div className="space-y-4 text-xs leading-relaxed text-slate-700 dark:text-slate-300">
+                      <div className="rounded-2xl bg-indigo-50/70 p-4 dark:bg-indigo-950/40">
+                        <strong className="mb-1 block font-bold text-indigo-900 dark:text-indigo-300">🏛️ Nguồn gốc & Điểm độc đáo:</strong>
+                        <p>{exp.origin}</p>
+                      </div>
+
+                      <div className="rounded-2xl bg-amber-50/70 p-4 dark:bg-amber-950/40">
+                        <strong className="mb-1 block font-bold text-amber-900 dark:text-amber-300">🌿 Thành phần chính:</strong>
+                        <p>{exp.ingredients}</p>
+                      </div>
+
+                      <div className="rounded-2xl bg-emerald-50/70 p-4 dark:bg-emerald-950/40">
+                        <strong className="mb-1 block font-bold text-emerald-900 dark:text-emerald-300">🥢 Cách thưởng thức chuẩn vị người bản địa:</strong>
+                        <p>{exp.howToEat}</p>
+                      </div>
                     </div>
+                  );
+                })()}
 
-                    <div className="rounded-2xl bg-amber-50/70 p-4 dark:bg-amber-950/40">
-                      <strong className="block font-bold text-amber-900 dark:text-amber-300 mb-1">🌿 Thành phần chính:</strong>
-                      <p>{exp.ingredients}</p>
-                    </div>
-
-                    <div className="rounded-2xl bg-emerald-50/70 p-4 dark:bg-emerald-950/40">
-                      <strong className="block font-bold text-emerald-900 dark:text-emerald-300 mb-1">🥢 Cách thưởng thức chuẩn vị người bản địa:</strong>
-                      <p>{exp.howToEat}</p>
-                    </div>
-                  </div>
-                );
-              })()}
-
-              <div className="mt-6 flex justify-end">
-                <Button onClick={() => setActiveExplainItem(null)} className="rounded-xl">
-                  Đã hiểu
-                </Button>
+                <div className="mt-6 flex justify-end">
+                  <Button onClick={() => setActiveExplainItem(null)} className="rounded-xl">
+                    Đã hiểu
+                  </Button>
+                </div>
               </div>
             </motion.div>
-          </>
+          </div>
         )}
       </AnimatePresence>
-    </div>
+    </Card>
   );
 }

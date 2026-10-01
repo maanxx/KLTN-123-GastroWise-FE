@@ -6,12 +6,13 @@ import { Translate } from '@/components/ui/Translate';
 
 import { redirect } from 'next/navigation';
 
-export default function ExplorePage({ searchParams }: { searchParams: { page?: string, search?: string, tags?: string, rating?: string, openNow?: string, sortBy?: string } }) {
-  if (!searchParams.tags && !searchParams.search && !searchParams.rating && !searchParams.openNow && !searchParams.sortBy && !searchParams.page) {
+export default function ExplorePage({ searchParams }: { searchParams: { page?: string, search?: string, q?: string, tags?: string, rating?: string, openNow?: string, sortBy?: string } }) {
+  const queryParam = searchParams.search || searchParams.q || '';
+  if (!searchParams.tags && !queryParam && !searchParams.rating && !searchParams.openNow && !searchParams.sortBy && !searchParams.page) {
     redirect('/explore?tags=ĐỒ CHAY');
   }
   const page = Number(searchParams.page) || 1;
-  const search = searchParams.search || '';
+  const search = queryParam;
   const tags = searchParams.tags || '';
   const rating = searchParams.rating || '';
   const openNow = searchParams.openNow || '';

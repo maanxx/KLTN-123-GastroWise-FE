@@ -9,7 +9,7 @@ async function fetchAllRestaurants(page: number, search: string, tags?: string, 
   try {
     const url = new URL(`${API_URL}/restaurants`);
     url.searchParams.append('page', page.toString());
-    url.searchParams.append('limit', '20');
+    url.searchParams.append('limit', '16');
     url.searchParams.append('sortBy', sortBy || 'diemTrungBinh');
     url.searchParams.append('order', 'desc');
     if (search) url.searchParams.append('search', search);

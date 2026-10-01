@@ -12,6 +12,8 @@ import { useTranslation } from '@/hooks/useTranslation';
 import { getRestaurantUrl } from '@/lib/utils/slug';
 import type { Restaurant } from '@/lib/api/restaurant.api';
 
+import { useFavoritesStore } from '@/stores/useFavoritesStore';
+
 interface RestaurantCardProps {
   restaurant: Restaurant;
   activeTags?: string;
@@ -22,46 +24,50 @@ export const RestaurantCard: React.FC<RestaurantCardProps> = ({ restaurant, acti
   const { data: favorites } = useGetFavorites();
   const toggleMutation = useToggleFavorite();
   const { t } = useTranslation();
+  const toggleLocalFavorite = useFavoritesStore((state) => state.toggleFavorite);
+  const isLocalFavorite = useFavoritesStore((state) => state.isFavorite((restaurant as any)._id || restaurant.id));
   
   const [isFavorited, setIsFavorited] = useState(false);
 
+  const rId = (restaurant as any)._id || restaurant.id;
+  const name = (restaurant as any).tenQuan || restaurant.name;
+  const address = (restaurant as any).diaChi || restaurant.address;
+  const priceRange = (restaurant as any).priceRange || restaurant.priceRange;
+
   useEffect(() => {
     if (favorites) {
-      setIsFavorited(favorites.some(f => f.id === restaurant.id || f.id === (restaurant as any)._id));
+      setIsFavorited(favorites.some(f => f.id === rId));
+    } else {
+      setIsFavorited(isLocalFavorite);
     }
-  }, [favorites, restaurant]);
-
-  const rId = (restaurant as any)._id || restaurant.id;
+  }, [favorites, rId, isLocalFavorite]);
 
   const handleToggleFavorite = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    
-    if (!isAuthenticated) {
-      toast.info('Vui lòng đăng nhập để lưu quán ăn!');
-      return;
-    }
-    
-    setIsFavorited(!isFavorited);
-    toggleMutation.mutate(rId, {
-      onSuccess: (data) => {
-        if (data.isFavorite) {
-          toast.success(data.message || 'Đã thêm vào mục yêu thích');
-        } else {
-          toast.success(data.message || 'Đã bỏ lưu quán ăn');
-        }
-      },
-      onError: () => {
-        setIsFavorited(isFavorited);
-        toast.error('Có lỗi xảy ra khi lưu quán ăn.');
-      }
+
+    const newFavState = toggleLocalFavorite({
+      id: rId,
+      name,
+      address: address || 'Việt Nam',
+      priceRange: priceRange || '40.000đ - 100.000đ',
+      rating: (restaurant as any).diemTrungBinh || restaurant.rating_avg || 4.8,
+      tags: [(restaurant as any).tags || 'Món Việt'],
     });
+
+    setIsFavorited(newFavState);
+    if (newFavState) {
+      toast.success(`Đã thêm "${name}" vào danh sách Yêu thích!`);
+    } else {
+      toast.info(`Đã xoá "${name}" khỏi danh sách Yêu thích.`);
+    }
+
+    if (isAuthenticated) {
+      toggleMutation.mutate(rId);
+    }
   };
   const placeholderImage = `https://picsum.photos/seed/${rId}/600/400`;
   const imageSrc = (restaurant as any).avatarUrl || restaurant.cover_image || placeholderImage;
-  const name = (restaurant as any).tenQuan || restaurant.name;
-  const address = (restaurant as any).diaChi || restaurant.address;
-  const priceRange = (restaurant as any).priceRange || restaurant.priceRange;
   const openingTime = (restaurant as any).openingTime || restaurant.openingTime;
 
 
@@ -75,7 +81,13 @@ export const RestaurantCard: React.FC<RestaurantCardProps> = ({ restaurant, acti
     cuisineTags = ['Nhà hàng'];
   }
 
-  const rating = (restaurant as any).diemTrungBinh ? Number((restaurant as any).diemTrungBinh) : restaurant.rating_avg ? (Number(restaurant.rating_avg) / 2) : null;
+  const rawRating = (restaurant as any).diemTrungBinh 
+    ? Number((restaurant as any).diemTrungBinh) 
+    : restaurant.rating_avg 
+      ? Number(restaurant.rating_avg) 
+      : null;
+
+  const rating = rawRating ? (rawRating > 5 ? rawRating / 2 : rawRating) : null;
 
   return (
     <Link href={getRestaurantUrl(restaurant)} className="block h-full group">

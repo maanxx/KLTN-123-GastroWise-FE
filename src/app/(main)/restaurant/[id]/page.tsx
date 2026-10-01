@@ -47,7 +47,11 @@ export default function RestaurantDetailPage({ params }: { params: { id: string 
     lat: apiRestaurant.lat,
     lng: apiRestaurant.lon || apiRestaurant.lng,
     coverImage: apiRestaurant.avatarUrl || apiRestaurant.cover_image || `https://picsum.photos/seed/${apiRestaurant._id}/1200/500`,
-    rating: apiRestaurant.diemTrungBinh ? Number(apiRestaurant.diemTrungBinh).toFixed(1) : '5.0',
+    rating: apiRestaurant.diemTrungBinh 
+      ? (Number(apiRestaurant.diemTrungBinh) > 5 
+          ? (Number(apiRestaurant.diemTrungBinh) / 2).toFixed(1) 
+          : Number(apiRestaurant.diemTrungBinh).toFixed(1)) 
+      : '5.0',
     cuisineTypes: apiRestaurant.tags ? apiRestaurant.tags.split(',') : ['Nhà hàng'],
     description: apiRestaurant.description || '',
     phone: apiRestaurant.contactPhone || 'Đang cập nhật',
@@ -87,8 +91,8 @@ export default function RestaurantDetailPage({ params }: { params: { id: string 
 
       <RestaurantHero restaurant={restaurant} />
       
-      <div className="container-app relative z-10 -mt-8 max-w-5xl">
-        <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
+      <div className="container-app relative z-10 -mt-10 max-w-5xl">
+        <div className="grid grid-cols-1 gap-8 items-start lg:grid-cols-3">
           {/* Main Content (Trái 2 phần) */}
           <div className="lg:col-span-2">
             <RestaurantMenu menu={restaurant.menu} />

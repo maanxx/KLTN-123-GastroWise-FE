@@ -31,25 +31,25 @@ export function BookingModal({ isOpen, onClose, restaurantName }: BookingModalPr
   return (
     <AnimatePresence>
       {isOpen && (
-        <>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           {/* Backdrop */}
           <motion.div 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm"
+            className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm"
           />
 
           {/* Modal Content */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+            initial={{ opacity: 0, scale: 0.95, y: 10 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            className="fixed left-1/2 top-1/2 z-50 w-full max-w-md -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-3xl bg-white shadow-2xl dark:bg-slate-900"
+            exit={{ opacity: 0, scale: 0.95, y: 10 }}
+            className="relative z-10 flex max-h-[85vh] w-full max-w-md flex-col overflow-hidden rounded-3xl bg-white shadow-2xl dark:bg-slate-900"
           >
             {/* Header */}
-            <div className="flex items-center justify-between border-b border-slate-100 p-4 dark:border-slate-800">
+            <div className="flex shrink-0 items-center justify-between border-b border-slate-100 p-4 dark:border-slate-800">
               <div className="flex items-center gap-2">
                 {step === 2 && (
                   <button onClick={() => setStep(1)} className="rounded-full p-1 hover:bg-slate-100 dark:hover:bg-slate-800">
@@ -66,7 +66,7 @@ export function BookingModal({ isOpen, onClose, restaurantName }: BookingModalPr
             </div>
 
             {/* Body */}
-            <div className="p-6">
+            <div className="flex-1 overflow-y-auto p-6">
               <div className="mb-6">
                 <h2 className="font-heading text-xl font-bold text-primary-600 truncate">{restaurantName}</h2>
                 <p className="text-sm text-slate-500">Hoàn tất đặt bàn trong vài giây</p>
@@ -99,16 +99,16 @@ export function BookingModal({ isOpen, onClose, restaurantName }: BookingModalPr
                     </label>
                     <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
                       {dates.map((d, i) => (
-                        <button 
+                        <button
                           key={i}
-                          className={`flex h-16 w-14 shrink-0 flex-col items-center justify-center rounded-xl border transition-colors ${
+                          className={`flex flex-col items-center justify-center shrink-0 w-14 h-16 rounded-2xl border transition-all ${
                             d.active 
-                              ? 'border-primary-500 bg-primary-50 text-primary-600 dark:bg-primary-900/30' 
-                              : 'border-slate-200 hover:border-primary-300 dark:border-slate-800'
+                              ? 'border-primary-500 bg-primary-50 text-primary-600 font-bold dark:bg-primary-950 dark:text-primary-400' 
+                              : 'border-slate-200 bg-white text-slate-600 dark:border-slate-800 dark:bg-slate-900'
                           }`}
                         >
                           <span className="text-xs">{d.day}</span>
-                          <span className="text-lg font-bold">{d.date}</span>
+                          <span className="text-lg">{d.date}</span>
                         </button>
                       ))}
                     </div>
@@ -119,40 +119,35 @@ export function BookingModal({ isOpen, onClose, restaurantName }: BookingModalPr
                     <label className="mb-3 flex items-center gap-2 text-sm font-semibold text-slate-700 dark:text-slate-300">
                       <Clock className="h-4 w-4" /> Chọn Giờ
                     </label>
-                    <div className="flex flex-wrap gap-2">
-                      {timeSlots.map((time, i) => (
+                    <div className="grid grid-cols-4 gap-2">
+                      {timeSlots.map((t) => (
                         <button
-                          key={i}
-                          onClick={() => setSelectedTime(time)}
-                          className={`rounded-lg px-4 py-2 text-sm font-semibold transition-colors ${
-                            selectedTime === time
-                              ? 'bg-primary-500 text-white shadow-md'
-                              : 'bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300'
+                          key={t}
+                          onClick={() => setSelectedTime(t)}
+                          className={`py-2 text-xs font-semibold rounded-xl border transition-all ${
+                            selectedTime === t
+                              ? 'border-primary-500 bg-primary-500 text-white shadow-sm'
+                              : 'border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300'
                           }`}
                         >
-                          {time}
+                          {t}
                         </button>
                       ))}
                     </div>
                   </div>
 
                   <Button className="w-full h-12 text-base rounded-xl mt-4" onClick={() => setStep(2)}>
-                    Tiếp tục <ChevronRight className="ml-2 h-5 w-5" />
+                    Tiếp tục
                   </Button>
                 </div>
               ) : (
-                <div className="space-y-6 text-center">
-                  <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-green-100 text-green-500 mb-4">
-                    <CalendarIcon className="h-10 w-10" />
-                  </div>
-                  <h3 className="font-heading text-2xl font-bold text-slate-900 dark:text-white">Xác nhận thông tin</h3>
-                  
-                  <div className="rounded-2xl bg-slate-50 p-4 text-left dark:bg-slate-800/50">
-                    <div className="flex justify-between py-2 border-b border-slate-200 dark:border-slate-700">
+                <div className="space-y-4 text-center">
+                  <div className="rounded-2xl bg-slate-50 p-4 text-left text-sm text-slate-600 dark:bg-slate-800/50 dark:text-slate-300">
+                    <div className="flex justify-between border-b border-slate-200 py-2 dark:border-slate-700">
                       <span className="text-slate-500">Khách:</span>
                       <span className="font-bold">{partySize} người</span>
                     </div>
-                    <div className="flex justify-between py-2 border-b border-slate-200 dark:border-slate-700">
+                    <div className="flex justify-between border-b border-slate-200 py-2 dark:border-slate-700">
                       <span className="text-slate-500">Thời gian:</span>
                       <span className="font-bold">{selectedTime}, Thứ 3 ngày 13</span>
                     </div>
@@ -162,15 +157,15 @@ export function BookingModal({ isOpen, onClose, restaurantName }: BookingModalPr
                     </div>
                   </div>
 
-                  <Button className="w-full h-12 text-base rounded-xl" onClick={onClose}>
+                  <Button className="h-12 w-full rounded-xl text-base" onClick={onClose}>
                     Xác nhận đặt bàn
                   </Button>
-                  <p className="text-xs text-slate-500 mt-2">Bằng cách xác nhận, bạn đồng ý với chính sách của nhà hàng.</p>
+                  <p className="mt-2 text-xs text-slate-500">Bằng cách xác nhận, bạn đồng ý với chính sách của nhà hàng.</p>
                 </div>
               )}
             </div>
           </motion.div>
-        </>
+        </div>
       )}
     </AnimatePresence>
   );
