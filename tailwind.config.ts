@@ -75,8 +75,8 @@ const config: Config = {
         },
       },
       fontFamily: {
-        sans: ['Inter', 'system-ui', 'sans-serif'],
-        heading: ['Plus Jakarta Sans', 'Inter', 'sans-serif'],
+        sans: ['"Be Vietnam Pro"', '"Segoe UI"', 'Arial', 'sans-serif'],
+        heading: ['"Be Vietnam Pro"', '"Segoe UI"', 'Arial', 'sans-serif'],
       },
       borderRadius: {
         '4xl': '2rem',

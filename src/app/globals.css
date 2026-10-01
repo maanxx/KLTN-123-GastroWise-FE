@@ -2,8 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
-/* === Google Fonts Import === */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap');
+/* === Direct Google Fonts Import to guarantee 100% full Vietnamese glyph coverage === */
+@import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,600&family=Inter:wght@300;400;500;600;700;800&display=swap');
 
 /* === CSS Custom Properties — Design Tokens === */
 @layer base {
@@ -51,15 +51,16 @@
     scroll-behavior: smooth;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
   }
 
   body {
-    @apply bg-white text-slate-900 dark:bg-slate-950 dark:text-slate-50;
-    font-family: 'Inter', system-ui, sans-serif;
+    @apply bg-slate-50/80 text-slate-800 dark:bg-slate-950 dark:text-slate-100;
+    font-family: 'Be Vietnam Pro', 'Segoe UI', Arial, sans-serif !important;
   }
 
-  h1, h2, h3, h4, h5, h6 {
-    font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+  h1, h2, h3, h4, h5, h6, .font-heading {
+    font-family: 'Be Vietnam Pro', 'Segoe UI', Arial, sans-serif !important;
   }
 }
 
@@ -157,4 +158,10 @@
            hover:shadow-md
            dark:border-slate-800 dark:bg-slate-900;
   }
+}
+
+/* === Swiper Global Brand Bullet Theme Override === */
+.swiper-pagination-bullet-active {
+  background: #059669 !important;
+  box-shadow: 0 2px 8px rgba(5, 150, 105, 0.4) !important;
 }

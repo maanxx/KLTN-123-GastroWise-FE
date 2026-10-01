@@ -1,8 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { CloudRain, Sun, Thermometer, Sparkles, RefreshCw, ArrowRight, MapPin } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { CloudRain, Sun, Thermometer, Sparkles, ArrowRight, MapPin } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import api from '@/lib/api/axios';
 
@@ -78,53 +77,49 @@ export function AiWeatherRecommendationCard() {
     }
   }, []);
 
-  const refreshRealtimeWeather = () => {
-    if (typeof window !== 'undefined' && 'geolocation' in navigator) {
-      navigator.geolocation.getCurrentPosition(
-        (pos) => {
-          fetchWeatherRecommendation(pos.coords.latitude, pos.coords.longitude);
-        },
-        () => {
-          fetchWeatherRecommendation();
-        },
-        { timeout: 5000 }
-      );
-    } else {
-      fetchWeatherRecommendation();
-    }
-  };
-
   const WeatherIcon = weather.icon;
 
   const handleFilterDish = (dish: string) => {
-    router.push(`/?search=${encodeURIComponent(dish)}`);
+    const params = new URLSearchParams(window.location.search);
+    params.set('search', dish);
+    params.set('page', '1');
+    router.push(`/?${params.toString()}`, { scroll: false });
+    
+    // Smooth scroll to search filter section
+    const elem = document.getElementById('search-filter-section');
+    if (elem) {
+      elem.scrollIntoView({ behavior: 'smooth' });
+    }
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 15 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="relative mb-10 overflow-hidden rounded-3xl border border-sky-200/80 bg-gradient-to-br from-sky-50/80 via-indigo-50/40 to-blue-100/30 p-6 shadow-xl backdrop-blur-md dark:border-sky-900/40 dark:from-sky-950/40 dark:via-indigo-950/30 dark:to-slate-900"
+    <div
+      className={`relative mb-10 overflow-hidden rounded-3xl border p-6 shadow-lg backdrop-blur-md transition-all duration-500 animate-in fade-in slide-in-from-bottom-3 ${
+        weather.condition === 'hot'
+          ? 'border-amber-200/60 bg-gradient-to-br from-amber-50/70 via-orange-50/30 to-emerald-50/20 dark:border-amber-900/30 dark:from-amber-950/30 dark:via-slate-900'
+          : 'border-emerald-200/60 bg-gradient-to-br from-slate-50/90 via-emerald-50/40 to-teal-50/30 dark:border-emerald-900/30 dark:from-emerald-950/30 dark:via-slate-900'
+      }`}
     >
       {/* Glow Effect */}
-      <div className="absolute -left-10 -top-10 h-32 w-32 rounded-full bg-sky-400/20 blur-2xl dark:bg-sky-500/10" />
+      <div className="absolute -left-10 -top-10 h-36 w-36 rounded-full bg-emerald-400/10 blur-3xl dark:bg-emerald-500/10" />
 
       {/* Header Bar */}
-      <div className="mb-4 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-tr from-sky-500 to-indigo-500 text-white shadow-md shadow-sky-500/20">
+      <div className="mb-6 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-tr from-emerald-600 via-teal-600 to-amber-600 text-white shadow-md shadow-emerald-600/20">
             <Sparkles className="h-5 w-5" />
           </div>
           <div>
-            <h3 className="font-heading font-bold text-slate-900 dark:text-white flex items-center gap-2 text-base">
+            <h3 className="font-heading font-extrabold text-slate-800 dark:text-slate-100 flex items-center gap-2 text-base sm:text-lg lg:text-xl">
               Gợi Ý Món Ăn Theo Thời Tiết & GPS Realtime
-              <span className="rounded-full bg-sky-100 px-2.5 py-0.5 text-xs font-semibold text-sky-700 dark:bg-sky-900/60 dark:text-sky-300">
+              <span className="rounded-full bg-emerald-100/90 px-3 py-0.5 text-xs font-bold text-emerald-800 dark:bg-emerald-900/60 dark:text-emerald-300">
                 Weather AI
               </span>
             </h3>
-            <p className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1">
-              <MapPin className="h-3 w-3 text-sky-500" />
-              Tự động phân tích khí hậu thực tế tại {weather.city}
+            {/* Tăng size chữ và tăng gap rộng rãi, dễ đọc */}
+            <p className="text-sm sm:text-base font-bold text-slate-700 dark:text-slate-200 flex items-center gap-2.5 mt-1.5">
+              <MapPin className="h-4 sm:h-5 w-4 sm:w-5 text-emerald-600 dark:text-emerald-400 shrink-0" />
+              <span>Tự động phân tích khí hậu thực tế tại {weather.city}</span>
             </p>
           </div>
         </div>
@@ -133,12 +128,12 @@ export function AiWeatherRecommendationCard() {
       {/* Main Grid */}
       <div className="grid grid-cols-1 gap-6 md:grid-cols-12 items-center">
         {/* Left: Weather Status Card */}
-        <div className="md:col-span-5 flex items-center gap-4 rounded-2xl border border-sky-200/60 bg-white/70 p-4 backdrop-blur-md dark:border-sky-900/40 dark:bg-slate-950/50">
-          <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-tr from-sky-400 to-blue-600 text-white shadow-lg shadow-sky-500/30">
+        <div className="md:col-span-5 flex items-center gap-4 rounded-2xl border border-emerald-200/60 bg-white/80 p-4 backdrop-blur-md dark:border-emerald-900/40 dark:bg-slate-950/60 shadow-sm">
+          <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-tr from-emerald-500 to-teal-600 text-white shadow-lg shadow-emerald-500/30">
             <WeatherIcon className="h-8 w-8 animate-pulse" />
           </div>
           <div>
-            <div className="flex items-center gap-1.5 text-xs font-bold text-sky-600 dark:text-sky-400">
+            <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-700 dark:text-emerald-400">
               <Thermometer className="h-4 w-4" />
               {weather.city}
             </div>
@@ -151,8 +146,8 @@ export function AiWeatherRecommendationCard() {
 
         {/* Right: AI Advice & Recommended Dishes */}
         <div className="md:col-span-7">
-          <p className="mb-3 text-xs font-medium text-slate-700 dark:text-slate-300 leading-relaxed bg-white/50 dark:bg-slate-800/40 p-3 rounded-xl border border-sky-100 dark:border-sky-900/30">
-            💡 <strong className="text-sky-700 dark:text-sky-300">Lời khuyên AI:</strong> {weather.aiAdvice}
+          <p className="mb-3.5 text-xs font-medium text-slate-700 dark:text-slate-300 leading-relaxed bg-white/70 dark:bg-slate-800/60 p-3.5 rounded-2xl border border-emerald-100 dark:border-emerald-900/30 shadow-sm">
+            💡 <strong className="text-emerald-800 dark:text-emerald-300">Lời khuyên AI:</strong> {weather.aiAdvice}
           </p>
 
           <div className="flex flex-wrap items-center gap-2">
@@ -161,7 +156,7 @@ export function AiWeatherRecommendationCard() {
               <button
                 key={idx}
                 onClick={() => handleFilterDish(dish)}
-                className="group flex items-center gap-1 rounded-xl bg-white px-3 py-1.5 text-xs font-bold text-slate-800 shadow-sm transition-all hover:bg-sky-500 hover:text-white dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-sky-500"
+                className="group flex items-center gap-1 rounded-xl bg-white px-3.5 py-1.5 text-xs font-bold text-slate-800 shadow-sm transition-all hover:bg-emerald-600 hover:text-white dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-emerald-600"
               >
                 <span>{dish}</span>
                 <ArrowRight className="h-3 w-3 opacity-0 transition-opacity group-hover:opacity-100" />
@@ -170,6 +165,6 @@ export function AiWeatherRecommendationCard() {
           </div>
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 }

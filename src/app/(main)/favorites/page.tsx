@@ -11,22 +11,23 @@ import { useGetFavorites } from '@/hooks/queries/useFavorite';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { useTranslation } from '@/hooks/useTranslation';
 
+import { useFavoritesStore } from '@/stores/useFavoritesStore';
+
 export default function FavoritesPage() {
   const { t } = useTranslation();
   const router = useRouter();
   const { isAuthenticated } = useAuthStore();
-  const { data: favoritesData, isLoading, isError } = useGetFavorites();
+  const { data: favoritesData, isLoading } = useGetFavorites();
+  const localFavorites = useFavoritesStore((state) => state.favorites);
 
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
 
-  useEffect(() => {
-    if (!isAuthenticated) {
-      router.push('/login');
-    }
-  }, [isAuthenticated, router]);
-
-  const rawFavorites = (favoritesData as any)?.data || favoritesData || [];
+  const rawFavorites = useMemo(() => {
+    const apiFavs = (favoritesData as any)?.data || favoritesData || [];
+    if (apiFavs.length > 0) return apiFavs;
+    return localFavorites;
+  }, [favoritesData, localFavorites]);
 
   const categories = [
     { id: 'all', label: 'Tất cả' },
@@ -113,11 +114,7 @@ export default function FavoritesPage() {
         </div>
 
         {/* Restaurant Cards List */}
-        {isError ? (
-          <div className="text-center py-10 text-red-500">
-            {t('favorites.error_loading')}
-          </div>
-        ) : filteredRestaurants.length > 0 ? (
+        {filteredRestaurants.length > 0 ? (
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {filteredRestaurants.map((restaurant: any) => (
               <RestaurantCard key={restaurant.id || restaurant._id} restaurant={restaurant} />

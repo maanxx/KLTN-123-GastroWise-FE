@@ -1,22 +1,25 @@
 'use client';
 
 import { useState } from 'react';
-import { Flame, Sparkles, Languages, Info, X } from 'lucide-react';
+import { Flame, Sparkles, Languages, Info, X, Plus } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { toast } from 'sonner';
 
 import { formatCurrency } from '@/lib/utils';
 import type { MenuItem } from '@/types/restaurant';
 import { Button, Card } from '@/components/ui';
+import { useCartStore } from '@/stores/useCartStore';
 
 interface RestaurantMenuProps {
   menu: MenuItem[];
 }
 
-type Lang = 'vi' | 'en' | 'ja' | 'ko';
+type Lang = 'vi' | 'en';
 
 export function RestaurantMenu({ menu }: RestaurantMenuProps) {
   const [selectedLang, setSelectedLang] = useState<Lang>('vi');
   const [activeExplainItem, setActiveExplainItem] = useState<MenuItem | null>(null);
+  const addItem = useCartStore((state) => state.addItem);
 
   const translateDish = (name: string, lang: Lang): string => {
     if (lang === 'vi') return name;
@@ -30,20 +33,6 @@ export function RestaurantMenu({ menu }: RestaurantMenuProps) {
       if (lower.includes('bún đậu')) return name + ' (Vermicelli with Tofu & Shrimp Paste)';
       if (lower.includes('cà phê')) return name + ' (Vietnamese Drip Coffee)';
       return name + ' (Vietnamese Specialty)';
-    }
-
-    if (lang === 'ja') {
-      if (lower.includes('phở')) return name + ' (ベトナム伝統フォー)';
-      if (lower.includes('cơm tấm')) return name + ' (ベトナム風豚焼き肉ご飯)';
-      if (lower.includes('cà phê')) return name + ' (ベトナムコーヒー)';
-      return name + ' (ベトナム名物)';
-    }
-
-    if (lang === 'ko') {
-      if (lower.includes('phở')) return name + ' (베트남 쌀국수)';
-      if (lower.includes('cơm tấm')) return name + ' (베트남식 돼지갈비 덮밥)';
-      if (lower.includes('cà phê')) return name + ' (베트남 연유 커피)';
-      return name + ' (베트남 특선 요리)';
     }
 
     return name;
@@ -88,17 +77,15 @@ export function RestaurantMenu({ menu }: RestaurantMenuProps) {
               AI Smart Menu
             </span>
           </h2>
-          <p className="text-xs text-slate-500">Hỗ trợ phiên dịch đa ngôn ngữ & giải thích văn hóa ẩm thực bởi AI</p>
+          <p className="text-xs text-slate-500">Phiên dịch thực đơn & giải thích văn hóa ẩm thực bởi AI</p>
         </div>
 
         {/* Language Toggles */}
         <div className="flex items-center gap-1 rounded-2xl border border-slate-200 bg-white p-1.5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
           <Languages className="ml-2 h-4 w-4 text-slate-400" />
           {[
-            { id: 'vi', label: '🇻🇳 VI' },
-            { id: 'en', label: '🇬🇧 EN' },
-            { id: 'ja', label: '🇯🇵 JA' },
-            { id: 'ko', label: '🇰🇷 KO' },
+            { id: 'vi', label: '🇻🇳 Tiếng Việt' },
+            { id: 'en', label: '🇬🇧 English' },
           ].map((l) => (
             <button
               key={l.id}
@@ -146,12 +133,31 @@ export function RestaurantMenu({ menu }: RestaurantMenuProps) {
                     {formatCurrency(item.price)}
                   </div>
 
-                  <button
-                    onClick={() => setActiveExplainItem(item)}
-                    className="flex items-center gap-1 text-xs font-bold text-indigo-600 hover:underline dark:text-indigo-400"
-                  >
-                    <Sparkles className="h-3.5 w-3.5" /> AI Giải Thích Văn Hóa
-                  </button>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => setActiveExplainItem(item)}
+                      className="flex items-center gap-1 text-xs font-bold text-indigo-600 hover:underline dark:text-indigo-400"
+                    >
+                      <Sparkles className="h-3.5 w-3.5" /> AI Giải Thích
+                    </button>
+
+                    <button
+                      onClick={() => {
+                        addItem({
+                          id: item.id || (item as any)._id || Math.random().toString(),
+                          name: item.name,
+                          price: item.price,
+                          image: item.image,
+                          restaurantId: 'rest-1',
+                          restaurantName: 'Nhà Hàng GastroWise',
+                        });
+                        toast.success(`Đã thêm "${item.name}" vào giỏ hàng!`);
+                      }}
+                      className="flex items-center gap-1.5 rounded-xl bg-primary-600 px-3 py-1.5 text-xs font-bold text-white shadow-md shadow-primary-500/20 hover:bg-primary-500 active:scale-95 transition-all"
+                    >
+                      <Plus className="h-3.5 w-3.5" /> Thêm món
+                    </button>
+                  </div>
                 </div>
               </div>
 
