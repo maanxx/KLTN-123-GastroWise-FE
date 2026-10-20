@@ -9,6 +9,7 @@ import { Search, Loader2, Camera, Upload } from 'lucide-react';
 import { restaurantApi } from '@/lib/api/restaurant.api';
 
 import { useTranslation } from '@/hooks/useTranslation';
+import { toast } from 'sonner';
 
 export const RestaurantList = () => {
   const { t } = useTranslation();
@@ -50,7 +51,7 @@ export const RestaurantList = () => {
         setImageResults(result.data);
       }
     } catch (error) {
-      alert(t('alert.search_image_error'));
+      toast.error(t('alert.search_image_error') || 'Lỗi khi tìm kiếm bằng hình ảnh!');
     } finally {
       setIsSearchingImage(false);
       if (fileInputRef.current) fileInputRef.current.value = '';

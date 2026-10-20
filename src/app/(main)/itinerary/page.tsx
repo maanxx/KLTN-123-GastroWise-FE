@@ -2,10 +2,9 @@ import { Plus } from 'lucide-react';
 import Link from 'next/link';
 import type { Metadata } from 'next';
 
-import { ItineraryCard } from '@/components/features/itinerary';
+import { ItineraryList } from '@/components/features/itinerary';
 import { Button } from '@/components/ui';
 import { ROUTES } from '@/lib/constants';
-import { MOCK_ITINERARIES } from '@/lib/mock/itinerary';
 
 export const metadata: Metadata = {
   title: 'Lộ trình của bạn',
@@ -32,11 +31,7 @@ export default function ItineraryListPage() {
           </Link>
         </div>
 
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {MOCK_ITINERARIES.map((itinerary) => (
-            <ItineraryCard key={itinerary.id} itinerary={itinerary} />
-          ))}
-        </div>
+        <ItineraryList />
       </div>
     </div>
   );

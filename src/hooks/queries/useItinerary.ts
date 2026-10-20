@@ -19,9 +19,10 @@ export const useGetItineraries = () => {
 
 export const useGetItineraryById = (id: string) => {
   const { isAuthenticated } = useAuthStore();
+  const isObjectId = typeof id === 'string' && /^[0-9a-fA-F]{24}$/.test(id);
   return useQuery({
     queryKey: ['itineraries', id],
     queryFn: () => itineraryApi.getItineraryById(id),
-    enabled: isAuthenticated && !!id,
+    enabled: isAuthenticated && !!id && isObjectId,
   });
 };

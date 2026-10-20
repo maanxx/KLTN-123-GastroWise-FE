@@ -5,6 +5,7 @@ import { useAuthStore } from '@/stores/useAuthStore';
 import { useGetReviews, useCreateReview } from '@/hooks/queries/useReviews';
 import { Button } from '@/components/ui';
 import { useTranslation } from '@/hooks/useTranslation';
+import { toast } from 'sonner';
 import { Star, Loader2, User as UserIcon } from 'lucide-react';
 import Link from 'next/link';
 
@@ -36,10 +37,10 @@ export const ReviewSection: React.FC<ReviewSectionProps> = ({ restaurantId }) =>
         onSuccess: () => {
           setComment('');
           setRating(5);
-          alert(t('alert.review_success'));
+          toast.success(t('alert.review_success') || 'Đã gửi đánh giá thành công!');
         },
         onError: (err: any) => {
-          alert(t('alert.review_error'));
+          toast.error(err?.response?.data?.message || t('alert.review_error') || 'Lỗi khi gửi đánh giá');
         },
       }
     );

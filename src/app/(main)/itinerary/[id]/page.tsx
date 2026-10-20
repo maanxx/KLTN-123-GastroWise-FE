@@ -8,12 +8,68 @@ import { ItineraryTimeline } from '@/components/features/itinerary';
 import { Button } from '@/components/ui';
 import { formatCurrency } from '@/lib/utils';
 import { useGetItineraryById } from '@/hooks/queries/useItinerary';
+import { MOCK_ITINERARIES } from '@/lib/mock/itinerary';
+import { toast } from 'sonner';
 
 export default function ItineraryDetailPage({ params }: { params: { id: string } }) {
+  const isObjectId = typeof params.id === 'string' && /^[0-9a-fA-F]{24}$/.test(params.id);
   const { data: response, isLoading, isError } = useGetItineraryById(params.id);
-  const itinerary = (response as any)?.data || response;
+  const apiItinerary = (response as any)?.data || response;
 
-  if (isLoading) {
+  const mockItem = !isObjectId ? MOCK_ITINERARIES.find((m) => m.id === params.id) : null;
+
+  const itinerary = apiItinerary || (mockItem ? {
+    id: mockItem.id,
+    _id: mockItem.id,
+    title: mockItem.title,
+    budget: mockItem.totalBudget,
+    start_time: mockItem.date,
+    stops: mockItem.stops.map((s, idx) => ({
+      stop_id: s.id,
+      restaurant_id: s.id,
+      order_index: idx + 1,
+      restaurant_name: s.restaurantName,
+      restaurant_lat: 10.7769 + idx * 0.005,
+      restaurant_lng: 106.7009 + idx * 0.005,
+      cuisine: s.cuisine,
+      address: s.address,
+    })),
+  } : null);
+
+  const handleShare = () => {
+    if (typeof window !== 'undefined') {
+      navigator.clipboard?.writeText(window.location.href);
+      toast.success('Đã sao chép liên kết lộ trình!', {
+        description: 'Bạn có thể gửi liên kết này cho bạn bè cùng trải nghiệm.',
+      });
+    }
+  };
+
+  const handleSave = () => {
+    toast.success('Đã lưu lộ trình vào mục Yêu thích!', {
+      description: 'Bạn có thể xem lại trong mục Lộ trình của tôi bất kỳ lúc nào.',
+    });
+  };
+
+  const handleStartNavigation = () => {
+    if (itinerary?.stops && itinerary.stops.length > 0) {
+      const firstStop = itinerary.stops[0];
+      const lat = firstStop.restaurant_lat || firstStop.lat;
+      const lng = firstStop.restaurant_lng || firstStop.lng;
+      const name = firstStop.restaurant_name || firstStop.restaurantName || firstStop.name || 'Hồ Chí Minh';
+      const destination = lat && lng
+        ? `${lat},${lng}`
+        : encodeURIComponent(name);
+      toast.info('Đang kết nối Google Maps dẫn đường...', {
+        description: `Điểm dừng đầu tiên: ${name}`,
+      });
+      window.open(`https://www.google.com/maps/dir/?api=1&destination=${destination}`, '_blank');
+    } else {
+      toast.info('Lộ trình chưa có tọa độ điểm dừng cụ thể.');
+    }
+  };
+
+  if (isObjectId && isLoading) {
     return (
       <div className="flex h-screen items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-primary-500" />
@@ -21,7 +77,7 @@ export default function ItineraryDetailPage({ params }: { params: { id: string }
     );
   }
 
-  if (isError || !itinerary) {
+  if (!itinerary || (isObjectId && isError)) {
     notFound();
   }
 
@@ -73,11 +129,11 @@ export default function ItineraryDetailPage({ params }: { params: { id: string }
           </div>
           
           <div className="mt-6 flex flex-wrap items-center gap-3 pt-6 border-t border-slate-100 dark:border-slate-800">
-            <Button variant="outline" size="sm" className="rounded-full">
+            <Button variant="outline" size="sm" className="rounded-full" onClick={handleShare}>
               <Share2 className="mr-2 h-4 w-4" />
               Chia sẻ
             </Button>
-            <Button variant="ghost" size="sm" className="rounded-full">
+            <Button variant="ghost" size="sm" className="rounded-full" onClick={handleSave}>
               <Star className="mr-2 h-4 w-4" />
               Lưu lộ trình
             </Button>
@@ -95,7 +151,11 @@ export default function ItineraryDetailPage({ params }: { params: { id: string }
 
         {/* Floating Action Button */}
         <div className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2 w-[90%] max-w-sm">
-          <Button size="lg" className="w-full h-14 rounded-full text-lg shadow-xl shadow-primary-500/30 hover:scale-105 active:scale-95 transition-all bg-gradient-to-r from-primary-500 to-primary-600 animate-in slide-in-from-bottom-10 duration-700">
+          <Button 
+            size="lg" 
+            onClick={handleStartNavigation}
+            className="w-full h-14 rounded-full text-lg shadow-xl shadow-primary-500/30 hover:scale-105 active:scale-95 transition-all bg-gradient-to-r from-primary-500 to-primary-600 animate-in slide-in-from-bottom-10 duration-700"
+          >
             <Navigation className="mr-2 h-5 w-5" /> Bắt đầu di chuyển
           </Button>
         </div>

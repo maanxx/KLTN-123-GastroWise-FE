@@ -9,7 +9,7 @@ import { getAuthToken, removeAuthToken } from '@/lib/utils/storage';
  * Base URL lấy từ biến môi trường, KHÔNG hardcode
  */
 export const apiClient = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_GATEWAY_URL || '',
+  baseURL: process.env.NEXT_PUBLIC_API_GATEWAY_URL ,
   timeout: APP_CONFIG.API_TIMEOUT,
   headers: {
     'Content-Type': 'application/json',

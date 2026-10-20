@@ -9,6 +9,7 @@ import { usePreferenceStore } from '@/stores/usePreferenceStore';
 import { useGenerateItinerary } from '@/hooks/queries/useItinerary';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { useTranslation } from '@/hooks/useTranslation';
+import { toast } from 'sonner';
 
 export function OptionsStep() {
   const { t } = useTranslation();
@@ -29,14 +30,24 @@ export function OptionsStep() {
 
   const handleSubmit = () => {
     if (!isAuthenticated) {
-      alert(t('alert.login_required'));
-      router.push('/login');
+      toast.warning(t('alert.login_required') || 'Vui lòng đăng nhập để tạo lộ trình!', {
+        description: 'Đăng nhập giúp lưu trữ và quản lý các chuyến đi ẩm thực của bạn.',
+        action: {
+          label: 'Đăng nhập',
+          onClick: () => router.push('/login'),
+        },
+      });
+      setTimeout(() => router.push('/login'), 1200);
       return;
     }
 
+    const toastId = toast.loading('Đang khởi tạo lộ trình theo sở thích cá nhân...', {
+      description: 'GastroAI đang phân tích khẩu vị, kiêng kỵ và ngân sách...',
+    });
+
     const payload = {
       title: data.notes ? data.notes.substring(0, 50) : 'Lộ trình từ Preferences',
-      prompt: data.notes || 'Lộ trình từ Preferences',
+      prompt: data.notes || 'Lộ trình ẩm thực theo sở thích cá nhân',
       start_time: new Date().toISOString(),
       end_time: new Date(Date.now() + 4 * 60 * 60 * 1000).toISOString(),
       budget: data.maxBudget || 500000,
@@ -46,15 +57,24 @@ export function OptionsStep() {
 
     generateItinerary(payload, {
       onSuccess: (res: any) => {
-        const itineraryId = res?.id || res?.data?.id;
+        const itineraryId = res?.id || res?.data?.id || res?._id || res?.data?._id;
         if (itineraryId) {
+          toast.success('Tạo lộ trình ẩm thực thành công!', {
+            id: toastId,
+            description: 'Đang mở trang chi tiết lộ trình...',
+          });
           router.push(`/itinerary/${itineraryId}`);
         } else {
-          alert(t('alert.itinerary_create_error'));
+          toast.error(t('alert.itinerary_create_error') || 'Không tạo được lộ trình, vui lòng thử lại!', {
+            id: toastId,
+          });
         }
       },
-      onError: () => {
-        alert(t('alert.ai_server_error'));
+      onError: (err: any) => {
+        toast.error(t('alert.ai_server_error') || 'Lỗi khi kết nối với máy chủ AI. Vui lòng thử lại sau!', {
+          id: toastId,
+          description: err?.response?.data?.message || err?.message || 'Hệ thống đang bận',
+        });
       }
     });
   };

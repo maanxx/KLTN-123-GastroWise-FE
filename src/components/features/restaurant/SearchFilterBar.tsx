@@ -144,7 +144,7 @@ export const SearchFilterBar: React.FC<SearchFilterBarProps> = ({ children }) =>
         setImageResults(result.data);
       }
     } catch (error) {
-      alert(t('alert.search_image_error'));
+      toast.error(t('alert.search_image_error') || 'Lỗi khi tìm kiếm bằng hình ảnh!');
     } finally {
       setIsSearchingImage(false);
       if (fileInputRef.current) fileInputRef.current.value = '';

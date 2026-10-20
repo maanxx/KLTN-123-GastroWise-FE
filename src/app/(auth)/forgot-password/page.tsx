@@ -23,18 +23,31 @@ export default function ForgotPasswordPage() {
   const [totpCode, setTotpCode] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
   // 1. Gửi Yêu Cầu Khôi Phục qua Email (POST /auth/forgot-password)
   const handleRequestReset = async (e: React.FormEvent) => {
     e.preventDefault();
+    const newErrors: Record<string, string> = {};
+
     if (!email.trim()) {
-      toast.error('Vui lòng nhập địa chỉ Email!');
+      newErrors.email = 'Vui lòng nhập địa chỉ Email!';
+    } else if (!emailRegex.test(email.trim())) {
+      newErrors.email = 'Địa chỉ Email không đúng định dạng (Ví dụ: user@example.com)';
+    }
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      toast.error(Object.values(newErrors)[0]);
       return;
     }
+    setErrors({});
 
     try {
       setIsLoading(true);
-      const res: any = await apiClient.post('/auth/forgot-password', { email });
+      const res: any = await apiClient.post('/auth/forgot-password', { email: email.trim() });
       toast.success(res?.message || 'Mã xác minh OTP đã được gửi tới email của bạn!');
       setStep('RESET');
     } catch (err: any) {
@@ -47,24 +60,38 @@ export default function ForgotPasswordPage() {
   // 2. Đặt Lại Mật Khẩu Mới bằng Email OTP (POST /auth/reset-password)
   const handleResetPassword = async (e: React.FormEvent) => {
     e.preventDefault();
+    const newErrors: Record<string, string> = {};
+
     if (!otp.trim()) {
-      toast.error('Vui lòng nhập mã OTP xác thực!');
+      newErrors.otp = 'Vui lòng nhập mã OTP!';
+    } else if (!/^\d{6}$/.test(otp.trim())) {
+      newErrors.otp = 'Mã xác minh OTP phải gồm đúng 6 chữ số!';
+    }
+
+    if (!newPassword) {
+      newErrors.newPassword = 'Vui lòng nhập mật khẩu mới!';
+    } else if (newPassword.length < 6) {
+      newErrors.newPassword = 'Mật khẩu mới phải có tối thiểu 6 ký tự!';
+    }
+
+    if (!confirmPassword) {
+      newErrors.confirmPassword = 'Vui lòng xác nhận mật khẩu mới!';
+    } else if (newPassword !== confirmPassword) {
+      newErrors.confirmPassword = 'Mật khẩu xác nhận không trùng khớp!';
+    }
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      toast.error(Object.values(newErrors)[0]);
       return;
     }
-    if (!newPassword || newPassword.length < 6) {
-      toast.error('Mật khẩu mới phải có ít nhất 6 ký tự!');
-      return;
-    }
-    if (newPassword !== confirmPassword) {
-      toast.error('Mật khẩu xác nhận không khớp!');
-      return;
-    }
+    setErrors({});
 
     try {
       setIsLoading(true);
       const res: any = await apiClient.post('/auth/reset-password', {
-        email,
-        otp,
+        email: email.trim(),
+        otp: otp.trim(),
         newPassword,
       });
       toast.success(res?.message || 'Đặt lại mật khẩu thành công! Vui lòng đăng nhập.');
@@ -79,24 +106,44 @@ export default function ForgotPasswordPage() {
   // 3. Đặt Lại Mật Khẩu Mới bằng Google Authenticator 2FA TOTP (POST /auth/2fa/reset-password)
   const handleResetPassword2FA = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email.trim() || !totpCode.trim()) {
-      toast.error('Vui lòng nhập đầy đủ Email và Mã 2FA 6 chữ số!');
+    const newErrors: Record<string, string> = {};
+
+    if (!email.trim()) {
+      newErrors.email = 'Vui lòng nhập địa chỉ Email!';
+    } else if (!emailRegex.test(email.trim())) {
+      newErrors.email = 'Địa chỉ Email không đúng định dạng!';
+    }
+
+    if (!totpCode.trim()) {
+      newErrors.totpCode = 'Vui lòng nhập mã 2FA từ Google Authenticator!';
+    } else if (!/^\d{6}$/.test(totpCode.trim())) {
+      newErrors.totpCode = 'Mã 2FA phải gồm đúng 6 chữ số!';
+    }
+
+    if (!newPassword) {
+      newErrors.newPassword = 'Vui lòng nhập mật khẩu mới!';
+    } else if (newPassword.length < 6) {
+      newErrors.newPassword = 'Mật khẩu mới phải có ít nhất 6 ký tự!';
+    }
+
+    if (!confirmPassword) {
+      newErrors.confirmPassword = 'Vui lòng xác nhận mật khẩu mới!';
+    } else if (newPassword !== confirmPassword) {
+      newErrors.confirmPassword = 'Mật khẩu xác nhận không trùng khớp!';
+    }
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      toast.error(Object.values(newErrors)[0]);
       return;
     }
-    if (!newPassword || newPassword.length < 6) {
-      toast.error('Mật khẩu mới phải có ít nhất 6 ký tự!');
-      return;
-    }
-    if (newPassword !== confirmPassword) {
-      toast.error('Mật khẩu xác nhận không khớp!');
-      return;
-    }
+    setErrors({});
 
     try {
       setIsLoading(true);
       const res: any = await apiClient.post('/auth/2fa/reset-password', {
-        email,
-        totpCode,
+        email: email.trim(),
+        totpCode: totpCode.trim(),
         newPassword,
       });
       toast.success(res?.message || 'Đặt lại mật khẩu bằng Google Authenticator thành công!');
@@ -171,7 +218,11 @@ export default function ForgotPasswordPage() {
                 type="email"
                 placeholder="name@example.com"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  if (errors.email) setErrors((prev) => ({ ...prev, email: '' }));
+                }}
+                error={errors.email}
                 required
                 icon={<Mail className="w-4 h-4 text-slate-400" />}
               />
@@ -192,7 +243,12 @@ export default function ForgotPasswordPage() {
                 type="text"
                 placeholder="Nhập 6 chữ số OTP"
                 value={otp}
-                onChange={(e) => setOtp(e.target.value)}
+                onChange={(e) => {
+                  setOtp(e.target.value);
+                  if (errors.otp) setErrors((prev) => ({ ...prev, otp: '' }));
+                }}
+                error={errors.otp}
+                maxLength={6}
                 required
               />
 
@@ -201,7 +257,11 @@ export default function ForgotPasswordPage() {
                 type="password"
                 placeholder="••••••••"
                 value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
+                onChange={(e) => {
+                  setNewPassword(e.target.value);
+                  if (errors.newPassword) setErrors((prev) => ({ ...prev, newPassword: '' }));
+                }}
+                error={errors.newPassword}
                 required
               />
 
@@ -210,7 +270,11 @@ export default function ForgotPasswordPage() {
                 type="password"
                 placeholder="••••••••"
                 value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
+                onChange={(e) => {
+                  setConfirmPassword(e.target.value);
+                  if (errors.confirmPassword) setErrors((prev) => ({ ...prev, confirmPassword: '' }));
+                }}
+                error={errors.confirmPassword}
                 required
               />
 
@@ -234,7 +298,11 @@ export default function ForgotPasswordPage() {
             type="email"
             placeholder="name@example.com"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(e) => {
+              setEmail(e.target.value);
+              if (errors.email) setErrors((prev) => ({ ...prev, email: '' }));
+            }}
+            error={errors.email}
             required
             icon={<Mail className="w-4 h-4 text-slate-400" />}
           />
@@ -244,7 +312,12 @@ export default function ForgotPasswordPage() {
             type="text"
             placeholder="Ví dụ: 849204"
             value={totpCode}
-            onChange={(e) => setTotpCode(e.target.value)}
+            onChange={(e) => {
+              setTotpCode(e.target.value);
+              if (errors.totpCode) setErrors((prev) => ({ ...prev, totpCode: '' }));
+            }}
+            error={errors.totpCode}
+            maxLength={6}
             required
             icon={<QrCode className="w-4 h-4 text-primary-500" />}
           />
@@ -254,7 +327,11 @@ export default function ForgotPasswordPage() {
             type="password"
             placeholder="••••••••"
             value={newPassword}
-            onChange={(e) => setNewPassword(e.target.value)}
+            onChange={(e) => {
+              setNewPassword(e.target.value);
+              if (errors.newPassword) setErrors((prev) => ({ ...prev, newPassword: '' }));
+            }}
+            error={errors.newPassword}
             required
           />
 
@@ -263,7 +340,11 @@ export default function ForgotPasswordPage() {
             type="password"
             placeholder="••••••••"
             value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
+            onChange={(e) => {
+              setConfirmPassword(e.target.value);
+              if (errors.confirmPassword) setErrors((prev) => ({ ...prev, confirmPassword: '' }));
+            }}
+            error={errors.confirmPassword}
             required
           />
 

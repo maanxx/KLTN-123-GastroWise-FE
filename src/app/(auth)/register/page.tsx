@@ -71,14 +71,14 @@ export default function RegisterPage() {
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
         <Input
-          label="Họ và tên"
+          label="Họ và tên *"
           placeholder="Nguyễn Văn A"
           error={errors.full_name?.message}
           {...register('full_name')}
         />
 
         <Input
-          label="Email"
+          label="Email *"
           type="email"
           placeholder="name@example.com"
           error={errors.email?.message}
@@ -86,7 +86,7 @@ export default function RegisterPage() {
         />
 
         <Input
-          label="Số điện thoại"
+          label="Số điện thoại *"
           type="tel"
           placeholder="0912345678"
           error={errors.phone?.message}
@@ -94,7 +94,7 @@ export default function RegisterPage() {
         />
 
         <Input
-          label="Mật khẩu"
+          label="Mật khẩu *"
           type="password"
           placeholder="Tối thiểu 6 ký tự"
           error={errors.password?.message}
@@ -102,7 +102,7 @@ export default function RegisterPage() {
         />
 
         <Input
-          label="Xác nhận mật khẩu"
+          label="Xác nhận mật khẩu *"
           type="password"
           placeholder="Nhập lại mật khẩu"
           error={errors.confirm_password?.message}
