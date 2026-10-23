@@ -5,7 +5,7 @@ import { Eye, EyeOff } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
-  label?: string;
+  label?: React.ReactNode;
   error?: string;
   helperText?: string;
   icon?: React.ReactNode;
@@ -19,11 +19,59 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
 
     const actualType = isPassword ? (showPassword ? 'text' : 'password') : type;
 
+    // Helper render nhãn: tự động tô đỏ dấu '*' để biểu thị trường bắt buộc
+    const renderLabelContent = () => {
+      if (!label) return null;
+      if (typeof label === 'string') {
+        const trimmed = label.trim();
+        if (trimmed.endsWith('*')) {
+          const mainText = trimmed.replace(/\*+$/, '').trim();
+          return (
+            <>
+              <span>{mainText}</span>
+              <span className="text-red-500 font-bold ml-1 select-none" aria-hidden="true">*</span>
+            </>
+          );
+        }
+        if (label.includes('*')) {
+          const parts = label.split('*');
+          return (
+            <>
+              {parts.map((part, index) => (
+                <span key={index}>
+                  {part}
+                  {index < parts.length - 1 && (
+                    <span className="text-red-500 font-bold ml-0.5 select-none" aria-hidden="true">*</span>
+                  )}
+                </span>
+              ))}
+            </>
+          );
+        }
+        return (
+          <>
+            <span>{label}</span>
+            {props.required && (
+              <span className="text-red-500 font-bold ml-1 select-none" aria-hidden="true">*</span>
+            )}
+          </>
+        );
+      }
+      return (
+        <>
+          {label}
+          {props.required && (
+            <span className="text-red-500 font-bold ml-1 select-none" aria-hidden="true">*</span>
+          )}
+        </>
+      );
+    };
+
     return (
       <div className="w-full space-y-1.5">
         {label && (
-          <label htmlFor={id} className="text-sm font-semibold text-slate-700 dark:text-slate-300">
-            {label}
+          <label htmlFor={id} className="text-sm font-semibold text-slate-700 dark:text-slate-300 flex items-center">
+            {renderLabelContent()}
           </label>
         )}
         <div className="relative">
@@ -38,6 +86,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
             type={actualType}
             className={cn(
               'w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 transition-all duration-200 placeholder:text-slate-400 focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20 disabled:cursor-not-allowed disabled:bg-slate-50 disabled:opacity-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:focus:border-primary-400',
+              '[&::-ms-reveal]:hidden [&::-ms-clear]:hidden',
               icon && 'pl-11',
               isPassword && 'pr-11',
               error && 'border-red-500 focus:border-red-500 focus:ring-red-500/20',

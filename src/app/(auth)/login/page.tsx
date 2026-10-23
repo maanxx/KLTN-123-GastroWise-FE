@@ -101,6 +101,7 @@ export default function LoginPage() {
           type="email"
           placeholder="name@example.com"
           error={errors.email?.message}
+          required
           {...register('email')}
         />
         
@@ -110,6 +111,7 @@ export default function LoginPage() {
             type="password"
             placeholder="••••••••"
             error={errors.password?.message}
+            required
             {...register('password')}
           />
           
