@@ -64,12 +64,18 @@ export default function RestaurantDetailPage({ params }: { params: { id: string 
       : null,
     openTime: openTime,
     closeTime: closeTime,
+    status: apiRestaurant.status || 'open',
+    isVerified: Boolean(apiRestaurant.isVerified),
+    isFeatured: Boolean(apiRestaurant.isFeatured),
     menu: menu.length > 0 ? menu.map((item: any) => ({
       id: item._id || item.id,
       name: item.name,
       description: item.description,
       price: Number(item.price),
       image: item.image || item.image_url || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400&q=80',
+      isAvailable: item.isAvailable !== false,
+      isFeatured: Boolean(item.isFeatured),
+      isPopular: Boolean(item.isPopular),
     })) : [],
     reviews: reviews.length > 0 ? reviews.map((rev: any) => ({
       id: rev._id || rev.id,
@@ -83,7 +89,7 @@ export default function RestaurantDetailPage({ params }: { params: { id: string 
 
   return (
     <div className="min-h-screen bg-primary-50/30 pb-24 dark:bg-transparent">
-      {/* Nút Back về quá khứ */}
+      {/* Nút Back về khám phá */}
       <div className="absolute left-4 top-24 z-20 sm:left-8">
         <Link 
           href="/explore" 
@@ -99,7 +105,11 @@ export default function RestaurantDetailPage({ params }: { params: { id: string 
         <div className="grid grid-cols-1 gap-8 items-start lg:grid-cols-3">
           {/* Main Content (Trái 2 phần) */}
           <div className="lg:col-span-2">
-            <RestaurantMenu menu={restaurant.menu} />
+            <RestaurantMenu 
+              menu={restaurant.menu} 
+              restaurantId={restaurant.id} 
+              restaurantName={restaurant.name} 
+            />
             <RestaurantReviews 
               reviews={restaurant.reviews} 
               restaurantId={params.id}

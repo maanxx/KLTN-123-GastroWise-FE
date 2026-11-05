@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Flame, Sparkles, Languages, Info, X, Plus } from 'lucide-react';
+import { Flame, Sparkles, Languages, Info, X, Plus, Star } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 
@@ -12,11 +12,13 @@ import { useCartStore } from '@/stores/useCartStore';
 
 interface RestaurantMenuProps {
   menu: MenuItem[];
+  restaurantId?: string;
+  restaurantName?: string;
 }
 
 type Lang = 'vi' | 'en';
 
-export function RestaurantMenu({ menu }: RestaurantMenuProps) {
+export function RestaurantMenu({ menu, restaurantId, restaurantName }: RestaurantMenuProps) {
   const [selectedLang, setSelectedLang] = useState<Lang>('vi');
   const [activeExplainItem, setActiveExplainItem] = useState<MenuItem | null>(null);
   const addItem = useCartStore((state) => state.addItem);
@@ -102,74 +104,111 @@ export function RestaurantMenu({ menu }: RestaurantMenuProps) {
         </div>
       </div>
 
-      {/* Menu Items Grid */}
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-        {menu.map((item) => (
-          <div
-            key={item.id || (item as any)._id || Math.random().toString()}
-            className="group relative flex flex-col justify-between rounded-2xl border border-slate-200 bg-white p-5 transition-all hover:border-primary-400 hover:shadow-lg dark:border-slate-800 dark:bg-slate-900/60 dark:hover:border-primary-700"
-          >
-            <div className="flex items-start justify-between gap-4">
-              <div className="flex-1">
-                <div className="flex items-center gap-2">
-                  <h3 className="font-heading text-lg font-bold text-slate-900 group-hover:text-primary-600 dark:text-white dark:group-hover:text-primary-400">
-                    {translateDish(item.name, selectedLang)}
-                  </h3>
-                  {item.isPopular && (
-                    <span className="flex items-center gap-1 rounded-full bg-amber-100 px-2 py-0.5 text-xs font-semibold text-amber-700 dark:bg-amber-900/30 dark:text-amber-400">
-                      <Flame className="h-3 w-3" /> Hot
-                    </span>
+      {/* Menu Items Grid or Empty State */}
+      {menu.length === 0 ? (
+        <div className="flex flex-col items-center justify-center py-12 text-center text-slate-500">
+          <div className="h-16 w-16 mb-3 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400">
+            🍽️
+          </div>
+          <p className="font-medium text-sm">Nhà hàng đang cập nhật thực đơn món ăn.</p>
+          <p className="text-xs text-slate-400 mt-1">Vui lòng quay lại sau hoặc liên hệ trực tiếp quán.</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          {menu.map((item) => {
+            const isAvailable = item.isAvailable !== false;
+            return (
+              <div
+                key={item.id || (item as any)._id || Math.random().toString()}
+                className={`group relative flex flex-col justify-between rounded-2xl border bg-white p-5 transition-all dark:bg-slate-900/60 ${
+                  isAvailable 
+                    ? 'border-slate-200 hover:border-primary-400 hover:shadow-lg dark:border-slate-800 dark:hover:border-primary-700' 
+                    : 'border-slate-200/60 opacity-75 dark:border-slate-800/60'
+                }`}
+              >
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex-1">
+                    <div className="flex flex-wrap items-center gap-1.5 mb-1">
+                      <h3 className="font-heading text-lg font-bold text-slate-900 group-hover:text-primary-600 dark:text-white dark:group-hover:text-primary-400">
+                        {translateDish(item.name, selectedLang)}
+                      </h3>
+                      {item.isFeatured && (
+                        <span className="flex items-center gap-1 rounded-full bg-purple-100 px-2 py-0.5 text-xs font-semibold text-purple-700 dark:bg-purple-900/30 dark:text-purple-300">
+                          <Star className="h-3 w-3 fill-purple-700" /> Bếp Trưởng Khuyên Dùng
+                        </span>
+                      )}
+                      {item.isPopular && (
+                        <span className="flex items-center gap-1 rounded-full bg-amber-100 px-2 py-0.5 text-xs font-semibold text-amber-700 dark:bg-amber-900/30 dark:text-amber-400">
+                          <Flame className="h-3 w-3" /> Hot
+                        </span>
+                      )}
+                      {!isAvailable && (
+                        <span className="rounded-full bg-rose-100 px-2 py-0.5 text-xs font-semibold text-rose-700 dark:bg-rose-900/30 dark:text-rose-400">
+                          Tạm hết món
+                        </span>
+                      )}
+                    </div>
+
+                    {item.description && (
+                      <p className="mt-2 text-sm text-slate-500 line-clamp-2">
+                        {item.description}
+                      </p>
+                    )}
+
+                    <div className="mt-4 flex items-center justify-between">
+                      <div className="font-extrabold text-slate-900 dark:text-white text-base">
+                        {formatCurrency(item.price)}
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => setActiveExplainItem(item)}
+                          className="flex items-center gap-1 text-xs font-bold text-indigo-600 hover:underline dark:text-indigo-400"
+                        >
+                          <Sparkles className="h-3.5 w-3.5" /> AI Giải Thích
+                        </button>
+
+                        <button
+                          disabled={!isAvailable}
+                          onClick={() => {
+                            if (!isAvailable) return;
+                            addItem({
+                              id: item.id || (item as any)._id || Math.random().toString(),
+                              name: item.name,
+                              price: item.price,
+                              image: item.image || item.imageUrl,
+                              restaurantId: restaurantId || 'rest-default',
+                              restaurantName: restaurantName || 'Nhà Hàng GastroWise',
+                            });
+                            toast.success(`Đã thêm "${item.name}" vào giỏ hàng!`);
+                          }}
+                          className={`flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-bold text-white shadow-md transition-all ${
+                            isAvailable
+                              ? 'bg-primary-600 shadow-primary-500/20 hover:bg-primary-500 active:scale-95'
+                              : 'bg-slate-300 dark:bg-slate-700 cursor-not-allowed text-slate-500 dark:text-slate-400 shadow-none'
+                          }`}
+                        >
+                          <Plus className="h-3.5 w-3.5" /> {isAvailable ? 'Thêm món' : 'Hết món'}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  {(item.image || item.imageUrl) && (
+                    <div className="shrink-0 ml-2">
+                      <img 
+                        src={item.image || item.imageUrl} 
+                        alt={item.name} 
+                        className={`h-20 w-20 rounded-xl object-cover shadow-sm ${!isAvailable ? 'grayscale' : ''}`} 
+                      />
+                    </div>
                   )}
                 </div>
-
-                {item.description && (
-                  <p className="mt-2 text-sm text-slate-500 line-clamp-2">
-                    {item.description}
-                  </p>
-                )}
-
-                <div className="mt-4 flex items-center justify-between">
-                  <div className="font-extrabold text-slate-900 dark:text-white text-base">
-                    {formatCurrency(item.price)}
-                  </div>
-
-                  <div className="flex items-center gap-2">
-                    <button
-                      onClick={() => setActiveExplainItem(item)}
-                      className="flex items-center gap-1 text-xs font-bold text-indigo-600 hover:underline dark:text-indigo-400"
-                    >
-                      <Sparkles className="h-3.5 w-3.5" /> AI Giải Thích
-                    </button>
-
-                    <button
-                      onClick={() => {
-                        addItem({
-                          id: item.id || (item as any)._id || Math.random().toString(),
-                          name: item.name,
-                          price: item.price,
-                          image: item.image,
-                          restaurantId: 'rest-1',
-                          restaurantName: 'Nhà Hàng GastroWise',
-                        });
-                        toast.success(`Đã thêm "${item.name}" vào giỏ hàng!`);
-                      }}
-                      className="flex items-center gap-1.5 rounded-xl bg-primary-600 px-3 py-1.5 text-xs font-bold text-white shadow-md shadow-primary-500/20 hover:bg-primary-500 active:scale-95 transition-all"
-                    >
-                      <Plus className="h-3.5 w-3.5" /> Thêm món
-                    </button>
-                  </div>
-                </div>
               </div>
-
-              {item.image && (
-                <div className="shrink-0 ml-2">
-                  <img src={item.image} alt={item.name} className="h-20 w-20 rounded-xl object-cover shadow-sm" />
-                </div>
-              )}
-            </div>
-          </div>
-        ))}
-      </div>
+            );
+          })}
+        </div>
+      )}
 
       {/* Cultural Explainer Modal */}
       <AnimatePresence>

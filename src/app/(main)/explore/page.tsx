@@ -4,13 +4,8 @@ import { CollectionsSlider } from '@/components/features/restaurant/CollectionsS
 import { AllRestaurantsSSR } from '@/components/features/restaurant/AllRestaurantsSSR';
 import { Translate } from '@/components/ui/Translate';
 
-import { redirect } from 'next/navigation';
-
 export default function ExplorePage({ searchParams }: { searchParams: { page?: string, search?: string, q?: string, tags?: string, rating?: string, openNow?: string, sortBy?: string } }) {
   const queryParam = searchParams.search || searchParams.q || '';
-  if (!searchParams.tags && !queryParam && !searchParams.rating && !searchParams.openNow && !searchParams.sortBy && !searchParams.page) {
-    redirect('/explore?tags=ĐỒ CHAY');
-  }
   const page = Number(searchParams.page) || 1;
   const search = queryParam;
   const tags = searchParams.tags || '';
