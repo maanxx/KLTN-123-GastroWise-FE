@@ -10,6 +10,9 @@ export interface MenuItem {
   image?: string;
   imageUrl?: string;
   isPopular?: boolean;
+  isFeatured?: boolean;
+  isAvailable?: boolean;
+  category?: string;
 }
 
 export interface Review {
@@ -49,4 +52,7 @@ export interface Restaurant {
   lat?: number;
   lng?: number;
   isOpen?: boolean;
+  isVerified?: boolean;
+  isFeatured?: boolean;
+  status?: string;
 }

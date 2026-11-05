@@ -33,6 +33,9 @@ export const RestaurantCard: React.FC<RestaurantCardProps> = ({ restaurant, acti
   const name = (restaurant as any).tenQuan || restaurant.name;
   const address = (restaurant as any).diaChi || restaurant.address;
   const priceRange = (restaurant as any).priceRange || restaurant.priceRange;
+  const isVerified = Boolean((restaurant as any).isVerified);
+  const isFeatured = Boolean((restaurant as any).isFeatured);
+  const status = (restaurant as any).status || 'open';
 
   useEffect(() => {
     if (favorites) {
@@ -70,8 +73,6 @@ export const RestaurantCard: React.FC<RestaurantCardProps> = ({ restaurant, acti
   const imageSrc = (restaurant as any).avatarUrl || restaurant.cover_image || placeholderImage;
   const openingTime = (restaurant as any).openingTime || restaurant.openingTime;
 
-
-  
   let cuisineTags: string[] = [];
   const dbTags = (restaurant as any).tags || restaurant.cuisine;
   
@@ -106,9 +107,28 @@ export const RestaurantCard: React.FC<RestaurantCardProps> = ({ restaurant, acti
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
           
+          {/* Status & Feature Badges */}
+          <div className="absolute top-3 left-3 flex flex-col gap-1.5 z-10">
+            {status === 'closed' && (
+              <span className="rounded-full bg-rose-600/95 px-2.5 py-0.5 text-[11px] font-bold text-white shadow backdrop-blur-sm">
+                🔴 Đóng cửa
+              </span>
+            )}
+            {isVerified && (
+              <span className="rounded-full bg-emerald-600/95 px-2.5 py-0.5 text-[11px] font-bold text-white shadow backdrop-blur-sm">
+                🛡️ Quán uy tín
+              </span>
+            )}
+            {isFeatured && (
+              <span className="rounded-full bg-purple-600/95 px-2.5 py-0.5 text-[11px] font-bold text-white shadow backdrop-blur-sm">
+                ✨ AI Đề xuất
+              </span>
+            )}
+          </div>
+
           <button 
             onClick={handleToggleFavorite}
-            className={`absolute top-3 right-3 p-2 rounded-full backdrop-blur-md transition-all ${
+            className={`absolute top-3 right-3 p-2 rounded-full backdrop-blur-md transition-all z-10 ${
               isFavorited ? 'bg-white text-red-500 shadow-md' : 'bg-black/30 text-white hover:bg-black/50 hover:text-red-400'
             }`}
           >

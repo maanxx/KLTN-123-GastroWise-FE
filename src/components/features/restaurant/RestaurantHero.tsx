@@ -49,6 +49,7 @@ export function RestaurantHero({ restaurant }: RestaurantHeroProps) {
       }
     });
   };
+
   return (
     <div className="relative h-[40vh] min-h-[300px] w-full lg:h-[50vh]">
       {/* Cover Image */}
@@ -68,6 +69,21 @@ export function RestaurantHero({ restaurant }: RestaurantHeroProps) {
         <div className="container-app flex flex-col items-start justify-between gap-4 md:flex-row md:items-end">
           <div className="text-white">
             <div className="mb-3 flex flex-wrap items-center gap-2">
+              {restaurant.status === 'closed' && (
+                <span className="rounded-full bg-rose-600 px-3 py-1 text-xs font-bold text-white shadow">
+                  🔴 Đang tạm đóng cửa
+                </span>
+              )}
+              {restaurant.isVerified && (
+                <span className="rounded-full bg-emerald-600/90 px-3 py-1 text-xs font-bold text-white backdrop-blur-md shadow flex items-center gap-1">
+                  🛡️ Quán uy tín xác thực
+                </span>
+              )}
+              {restaurant.isFeatured && (
+                <span className="rounded-full bg-purple-600/90 px-3 py-1 text-xs font-bold text-white backdrop-blur-md shadow flex items-center gap-1">
+                  ✨ AI Đề xuất ưu tiên
+                </span>
+              )}
               {restaurant.cuisineTypes?.map((type, idx) => (
                 <span
                   key={idx}
@@ -86,7 +102,7 @@ export function RestaurantHero({ restaurant }: RestaurantHeroProps) {
               <div className="flex items-center gap-1.5 font-medium text-secondary-400">
                 <Star className="h-5 w-5 fill-current" />
                 <span className="text-base text-white">{restaurant.rating}</span>
-                <span className="text-slate-300">({restaurant.reviewCount} đánh giá)</span>
+                <span className="text-slate-300">({restaurant.reviewCount || 0} đánh giá)</span>
               </div>
               <div className="hidden h-1.5 w-1.5 rounded-full bg-slate-500 sm:block" />
               <div className="flex items-center gap-1.5">
